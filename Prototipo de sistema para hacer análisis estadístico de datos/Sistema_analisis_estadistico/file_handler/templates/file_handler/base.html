@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        {% block title %} <title>Sistema de Análisis Estadístico</title> {% endblock %}
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    {% block styles %} 
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}"> 
+    {% endblock %}
+
+</head>
+<body>
+    
+    <header>
+        <!-- Aquí podrías incluir la imagen utilizando el tag de imagen de Django -->
+        {% block header %}
+        <div class="contenedor-flex-between">
+            <div>    
+                <img id="logo" class="ml-5" src="{% static 'images/logo.png' %}" alt="Logo IPN" />
+                <h1 class="ml-3">Instituto Politécnico Nacional - UPIIZ</h1>
+            </div>
+            <div class="centrado">
+                <h1 class="mr-5">Sistema de Análisis Estadístico de Datos</h1>
+            </div>
+        </div>
+
+        {% endblock %}
+    </header>
+
+    <div class="contenedor-margen">
+        {% block content %}
+
+            <!-- El contenido específico de cada página irá aquí. -->
+
+        {% endblock %}
+    </div>
+
+    <footer class="contenedor-der">
+        <p class="mr-5">blabliriblabla aquí debería ir el pie de página</p>
+    </footer>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block scripts %}
+        <!-- Scripts específicos de cada página irán aquí. -->
+    {% endblock %}
+
+</body>
+</html>

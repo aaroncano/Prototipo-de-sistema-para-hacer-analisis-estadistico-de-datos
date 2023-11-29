@@ -1,0 +1,37 @@
+{% extends "data_cleaning/plantilla_opciones.html" %}
+
+{% block formulario %}
+
+<form action="{% url 'data_cleaning:normalizar_texto' file_name=file_name %}" method="post">
+    {% csrf_token %}
+    <h3>Normalizar Texto</h3>
+
+    <div class="form-group">
+        <label class="label-opciones-limpieza" for="alcance">Seleccione el alcance de la normalización:</label>
+        <select class="form-control input-opciones-limpieza" id="alcance" name="alcance">
+            <option value="nombres_columnas">Nombres de Columnas</option>
+            <option value="columna_especifica">Columna Específica</option>
+            <option value="todo">Todo el CSV</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="group_columna_especifica" style="display: none;">
+        <label class="label-opciones-limpieza" for="columna_especifica">Nombre de la columna a normalizar:</label>
+        <input type="text" class="form-control input-opciones-limpieza" id="columna_especifica" name="columna_especifica" placeholder="Nombre de la columna">
+    </div>
+
+    {{ block.super }}
+</form>
+
+<script>
+    document.getElementById('alcance').addEventListener('change', function() {
+        var group = document.getElementById('group_columna_especifica');
+        if(this.value === 'columna_especifica') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+</script>
+
+{% endblock %}

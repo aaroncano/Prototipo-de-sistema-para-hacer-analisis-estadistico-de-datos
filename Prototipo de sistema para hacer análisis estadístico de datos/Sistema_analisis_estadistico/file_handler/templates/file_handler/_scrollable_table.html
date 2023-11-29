@@ -1,0 +1,10 @@
+<h3>{% block titulo_tabla %}Tus datos{% endblock %}</h3>
+
+<div>
+    <div class="scrollable-table mx-auto">
+        <!-- Muestra el DataFrame como tabla HTML -->
+        <table class="table table-striped">
+            {{ dataframe|safe }}
+        </table>
+    </div>    
+</div>
