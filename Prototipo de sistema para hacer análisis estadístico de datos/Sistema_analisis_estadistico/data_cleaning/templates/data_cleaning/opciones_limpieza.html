@@ -20,7 +20,11 @@
                 <a href="{% url 'data_cleaning:eliminar_columnas' file_name=file_name %}" class="btn boton-primario boton-opcion-limpieza">Eliminar columnas</a>
                 <a href="{% url 'data_cleaning:normalizar_texto' file_name=file_name %}" class="btn boton-primario boton-opcion-limpieza">Normalizar texto</a>
                 <a href="{% url 'data_cleaning:manejar_valores_vacios' file_name=file_name %}" class="btn boton-primario boton-opcion-limpieza">Manejar valores vacíos</a>
+                <a href="{% url 'data_cleaning:procesar_outliers' file_name=file_name %}" class="btn boton-primario boton-opcion-limpieza">Procesar outliers</a>
+                <a href="{% url 'data_cleaning:filtrar_datos' file_name=file_name %}" class="btn boton-primario boton-opcion-limpieza">Filtrar datos por condición</a>
+                
                 <a href="{% url 'file_handler:revisar_csv' file_name=file_name %}" class="btn boton-secundario">Volver al menú</a>
+                
                 <!-- Agrega más botones/enlaces según las opciones de limpieza que tengas -->
             </div>        
         </div>

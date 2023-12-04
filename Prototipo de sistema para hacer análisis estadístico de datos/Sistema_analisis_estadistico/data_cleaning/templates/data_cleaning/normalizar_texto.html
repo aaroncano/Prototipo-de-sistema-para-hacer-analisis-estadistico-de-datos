@@ -16,8 +16,15 @@
     </div>
 
     <div class="form-group" id="group_columna_especifica" style="display: none;">
-        <label class="label-opciones-limpieza" for="columna_especifica">Nombre de la columna a normalizar:</label>
-        <input type="text" class="form-control input-opciones-limpieza" id="columna_especifica" name="columna_especifica" placeholder="Nombre de la columna">
+        <label class="label-opciones-limpieza" for="columna_especifica">Elija la(s) columna(s) a normalizar:</label>
+        {% for columna in columnas %}
+        <div class="container-fluid">
+            <input class="checkbox" type="checkbox" name="columnas_a_normalizar" value="{{ columna }}" id="check_{{ columna }}">
+            <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
+                {{ columna }}
+            </label>
+        </div>
+        {% endfor %}
     </div>
 
     {{ block.super }}

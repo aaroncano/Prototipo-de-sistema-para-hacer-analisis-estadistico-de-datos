@@ -10,7 +10,7 @@
         <label class="label-opciones-limpieza" for="alcance">Seleccione las columnas que desea eliminar:</label>
         {% for columna in columnas %}
         <div class="container-fluid">
-            <input class="form-check-input" type="checkbox" name="columnas_a_eliminar" value="{{ columna }}" id="check_{{ columna }}">
+            <input class="checkbox" type="checkbox" name="columnas_a_eliminar" value="{{ columna }}" id="check_{{ columna }}">
             <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
                 {{ columna }}
             </label>

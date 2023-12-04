@@ -9,17 +9,18 @@ html, body {
 html{
     font-size: 10px;
 }
-body{
+body {
     font-family: 'Open Sans', sans-serif;
     font-size: 1.7rem;
     margin: 0;
     padding: 0;
-    background-color: #f6f6f6;
-
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    background-color: hsl(329.6,57.7%,99%);
+    
 }
+.main-content {
+    height: 100vh;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Roboto', sans-serif;
     font-weight: bold;
@@ -34,11 +35,13 @@ h1 {
 h2 {
     font-size: 3.5rem;
     margin-bottom: 20px;
+    opacity: 0.9;
 }
 h3 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     font-weight: 500;
+    opacity: 0.9;
 }
 
 
@@ -51,30 +54,38 @@ h3 {
 
 /* ESTILOS DE LA PLANTILLA BASE */
 header {
-    background-color: #6c1d45; /* Color de fondo para el header */
+    background-color: hsl(330, 58%, 27%); /* Color de fondo para el header */
     color: #fff; /* Color del texto para el header */
     padding: 1rem 0;
     margin-bottom: 4.5rem;
     text-align: left;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Horizontal offset, vertical offset, blur radius, color */
 }
+header h1{
+    opacity: 0.8;
+}
 #logo {
     width: 3.5rem;
+    opacity: 0.8;
 }
 
 
 footer {
-    background-color: #797979;
+    background-color: hsl(330, 58%, 20%);
     color: #fff;
-    padding: 10px 0;
+    padding: 40px 0;
     text-align: center;
     width: 100%;
 }
 
 footer p {
-    font-size: 1.4rem;
-    opacity: 0.7;
-    margin: 0;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+#footer_img {
+    width: 30rem;
 }
 
 .content-box {
@@ -105,29 +116,34 @@ footer p {
 .btn {
     margin: 1rem 0;
     font-size: 1.6rem;
-    padding: 0.6rem 1rem;
+    padding: 0.9rem 1rem;
     border-radius: 0.6rem;
     border: none; /* Sin borde */
-    color: white; /* Color del texto común */
+    color: hsl(329.6,57.7%,97%); /* Color del texto común */
+    font-family: 'Roboto', sans-serif;
 }
 
 .boton-primario {
-    background-color: #217b4e; /* Nuevo color de fondo */
-    border: 2px solid #217b4e; /* Nuevo borde */
+    background-color: rgb(0, 138, 96, 8%);
+    color: #212529;
+    border: 2px solid hsl(162, 100%, 27%); /* Nuevo borde */
 }
 
 .boton-primario:hover {
-    background-color:#299760; /* Color más oscuro para hover */
-    color: white;
+    color: hsl(329.6,57.7%,99%);
+    background-color:hsl(162, 100%, 30%); /* Color más oscuro para hover */
+    border: 2px solid hsl(162, 100%, 30%); /* Nuevo borde */
 }
 
 .boton-primario:focus {
-    background-color:#105f36; /* Color ligeramente más oscuro para focus */
-    box-shadow: 0 0 0 0.2rem rgba(19, 125, 72, 0.5); /* Sombra para destacar el focus */
+    background-color:hsl(162, 100%, 30%); /* Color ligeramente más oscuro para focus */
+    box-shadow: 0 0 0 0.2rem hsl(162, 100%, 30%); /* Sombra para destacar el focus */
+    border: 2px solid hsl(162, 100%, 27%); /* Nuevo borde */
 }
 
 .boton-primario:active {
-    background-color: #0e502c; /* Color más oscuro para active */
+    background-color: hsl(162, 100%, 30%); /* Color más oscuro para active */
+    border: 2px solid hsl(162, 100%, 27%); /* Nuevo borde */
 }
 
 .boton-primario:disabled {
@@ -137,27 +153,27 @@ footer p {
 }
 
 .boton-secundario {
+    background-color: hsl(329.6,57.7%,98%); /* Nuevo color de fondo */
     color: #212529;
-    background-color: #f6f6f6; /* Color de fondo para botones secundarios */
-    border: 2px solid rgb(192, 192, 192); /* Borde para botones secundarios */
+    border: 2px solid hsl(329.6,57.7%,32%)/* Nuevo borde */
 }
 
 .boton-secundario:hover {
-    background-color: #f1bd54; /* Color más oscuro para hover */
-    color: white;
+    background-color: hsl(329.6,57.7%,95%); /* Color más oscuro para hover */
+    border: 2px solid hsl(329.6,57.7%,27%); /* Nuevo borde */
 }
 
 .boton-secundario:focus {
-    background-color: #be9443; /* Color ligeramente más oscuro para focus */
-    box-shadow: 0 0 0 0.2rem rgba(237, 191, 102, 0.5); /* Sombra para destacar el focus */
+    background-color: hsl(329.6,57.7%,95%); /* Color ligeramente más oscuro para focus */
+    box-shadow: 0 0 0 0.2rem hsl(329.6,57.7%,95%); /* Sombra para destacar el focus */
 }
 
 .boton-secundario:active {
-    background-color: #b87d36; /* Color más oscuro para active */
+    background-color: hsl(329.6,57.7%,95%); /* Color más oscuro para active */
 }
 
 .boton-secundario:disabled {
-    background-color: #EDBF66;
+    background-color: hsl(329.6,57.7%,95%);
     opacity: 0.65; /* Hacer el botón más transparente */
     pointer-events: none; /* Desactivar eventos del ratón */
 }
@@ -195,6 +211,9 @@ footer p {
     font-size: 1.7rem;
     margin-bottom: 2rem;
 }
+.checkbox input {
+    margin-top: 2rem;
+}
 
 
 
@@ -207,42 +226,45 @@ footer p {
 /* ESTILOS PARA LAS TABLAS */
 .scrollable-table {
     width: 100%;
-    height: calc(100vh - 350px); /* 100vh es la altura total del viewport, 150px es la altura combinada del header, botones y footer */
-    overflow-y: scroll;
+    height: calc(100vh - 300px); /* 100vh es la altura total del viewport, 150px es la altura combinada del header, botones y footer */
+    overflow-y: auto;
     margin-bottom: 2rem;
 }
+
 .table {
     width: 100%;
     margin-bottom: 1rem;
     color: #212529;
-    border-collapse: collapse; /* Hace que las líneas de la tabla se vean continuas */
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); /* Sombra ligera para darle profundidad */
+    border: none;
+    background-color: hsl(329.6,57.7%,99%);
 }
 
 .table thead {
-    background-color: #7a7a7a; /* Color de fondo para el encabezado de la tabla */
-    color: white; /* Color del texto para el encabezado */
+    background-color: hsl(329.6,57.7%,99%); /* Color de fondo para el encabezado de la tabla */
+    color: #212529; /* Color del texto para el encabezado */
+    font-family: 'Roboto', sans-serif;
+    border: 3px solid hsl(329.6,57.7%,99%);
 }
 
+.table td, th {
+    border: 1px solid hsl(329.6,57.7%,99%);
+}
 .table thead th {
     padding: 10px 15px; /* Espaciado interno para las celdas del encabezado */
     text-align: left; /* Alineación del texto */
-    font-weight: bold; /* Texto en negrita */
 }
 
 .table tbody td {
     padding: 10px 15px; /* Espaciado interno para las celdas del cuerpo */
-    border-top: 1px solid #dee2e6; /* Borde superior para cada celda */
 }
 
 .table tbody tr:nth-child(odd) {
-    background-color: #f8f9fa; /* Color de fondo para filas impares */
+    background-color: hsl(329.6,57.7%,97%); /* Color de fondo para filas impares */
 }
 
 .table tbody tr:hover {
-    background-color: #e9ecef; /* Color de fondo al pasar el ratón por encima de una fila */
+    background-color: hsl(329.6,57.7%,95%); /* Color de fondo al pasar el ratón por encima de una fila */
 }
-
 
 
 
@@ -254,6 +276,10 @@ footer p {
 /* ESTILOS PARA CONTENEDORES */
 .contenedor-margen {
     margin: 2vh 4vw; /* Margen vertical basado en el alto de la ventana, y horizontal basado en el ancho */
+    flex: 1; /* Hace que el contenedor ocupe todo el espacio disponible */
+}
+.contenedor-margen-grande {
+    margin: 2vh 8vw; /* Margen vertical basado en el alto de la ventana, y horizontal basado en el ancho */
     flex: 1; /* Hace que el contenedor ocupe todo el espacio disponible */
 }
 .centrado {
