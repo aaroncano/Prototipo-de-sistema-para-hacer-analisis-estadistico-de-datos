@@ -1,4 +1,4 @@
-from Sistema_analisis_estadistico.utils.csv_utils import crear_inicio_tabla
+from utils.tablas_utils import crear_inicio_tabla
 
 
 def guardar_resultado_en_sesion(request, resultado):
