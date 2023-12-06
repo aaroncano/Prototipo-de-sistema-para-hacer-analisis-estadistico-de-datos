@@ -1,3 +1,8 @@
+import os
+import re
+from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import redirect
 import pandas as pd
 
 # cosas a añadir según el requerimiento 2
@@ -15,23 +20,7 @@ import pandas as pd
 # 2. Máximo y mínimo
 # 3. Escalamiento de datos
 
-def eliminar_columnas(df, columnas_a_eliminar):
-    """
-    Elimina las columnas especificadas de un DataFrame de pandas.
-
-    Parámetros:
-    df (pandas.DataFrame): DataFrame del cual se eliminarán las columnas.
-    columnas_a_eliminar (list): Lista de nombres de columnas a eliminar.
-
-    Retorna:
-    tuple: El DataFrame modificado y un diccionario con detalles sobre el resultado de la operación.
-
-    La función primero imprime las columnas originales del DataFrame y las columnas solicitadas para eliminar.
-    Luego, itera sobre la lista de columnas a eliminar y, si la columna existe en el DataFrame, intenta eliminarla.
-    Si ocurre una excepción durante la eliminación, se captura y almacena en el diccionario de resultados.
-    Finalmente, la función imprime las columnas restantes después de la eliminación y el resultado de la operación.
-    """
-
+def eliminar_columnas(df, columnas_a_manipular):
     resultado = {
         'Eliminado': [],
         'No encontrado': [],
@@ -39,11 +28,11 @@ def eliminar_columnas(df, columnas_a_eliminar):
         'Error': None
     }
     
-    if not columnas_a_eliminar:
+    if not columnas_a_manipular:
         resultado['Mensaje'] = "No se especificaron columnas a eliminar"
         return df, resultado
     
-    for col in columnas_a_eliminar:
+    for col in columnas_a_manipular:
         if col in df.columns:
             try:
                 df.drop(columns=[col], inplace=True)
@@ -57,19 +46,7 @@ def eliminar_columnas(df, columnas_a_eliminar):
 
 
 
-def normalizar_texto(df, alcance, columna_especifica=None):
-    """
-    Normaliza el texto en las columnas de un DataFrame de pandas.
-
-    Parámetros:
-    df (pandas.DataFrame): DataFrame a ser procesado.
-    alcance (str): Puede ser 'nombres_columnas', 'columna_especifica' o 'todo'.
-    columna_especifica (str, opcional): Nombre de la columna específica a normalizar.
-
-    Retorna:
-    tuple: DataFrame modificado y un diccionario con información sobre el resultado.
-    """
-
+def normalizar_texto(df, alcance, columnas_a_manipular=None):
     resultado = {
         'normalizadas': [],
         'errores': [],
@@ -77,178 +54,207 @@ def normalizar_texto(df, alcance, columna_especifica=None):
     }
 
     def normalizar_columna(col):
+        # Función interna para normalizar cada valor en la columna
         def normalizar_valor(valor):
             partes = valor.split(',')  # Divide el valor por las comas
             partes_normalizadas = [p.strip().lower().replace(' ', '_') for p in partes]  # Normaliza cada parte
-            return ', '.join(partes_normalizadas)  # Une las partes nuevamente, manteniendo la coma y el espacio
-
+            return ', '.join(partes_normalizadas)  # Une las partes nuevamente
+        # Saltar columnas con datos numéricos
         if pd.api.types.is_numeric_dtype(df[col]):
-            resultado['no_modificadas'].append(f"{col} (dato numérico)")
+            resultado['no_modificadas'].append(col)
             return
-
         try:
             df[col] = df[col].astype(str).apply(normalizar_valor)
             resultado['normalizadas'].append(col)
         except Exception as e:
-            resultado['errores'].append(f"Error al normalizar {col}: {e}")
+            resultado['errores'].append(f"Error al normalizar la columna '{col}': {e}")
 
-    if alcance == 'nombres_columnas':
-        for col in df.columns:
-            nuevo_nombre = col.strip().lower().replace(' ', '_', regex=True)
-            df.rename(columns={col: nuevo_nombre}, inplace=True)
-            resultado['normalizadas'].append(nuevo_nombre)
-    elif alcance == 'columna_especifica' and columna_especifica:
-        if columna_especifica in df.columns:
-            normalizar_columna(columna_especifica)
-        else:
-            resultado['errores'].append(f"Columna {columna_especifica} no encontrada.")
-    elif alcance == 'todo':
-        for col in df.columns:
-            normalizar_columna(col)
+    try:
+        if alcance == 'nombres_columnas':
+            for col in df.columns:
+                try:
+                    nuevo_nombre = re.sub(r'\s+', '_', col.strip().lower())
+                    df.rename(columns={col: nuevo_nombre}, inplace=True)
+                    resultado['normalizadas'].append(nuevo_nombre)
+                except Exception as e:
+                    resultado['errores'].append(f"Error al renombrar la columna '{col}': {e}")
+
+        elif alcance == 'columna_especifica':
+            if columnas_a_manipular:
+                for columna in columnas_a_manipular:
+                    if columna in df.columns:
+                        normalizar_columna(columna)
+                    else:
+                        resultado['errores'].append(f"Columna '{columna}' no encontrada.")
+            else:
+                resultado['errores'].append("No se proporcionaron columnas para normalizar.")
+                
+        elif alcance == 'todo':
+            for col in df.columns:
+                normalizar_columna(col)
+    except Exception as e:
+        resultado['errores'].append(f"Error general al normalizar: {e}")
 
     return df, resultado
 
 
-def manejar_valores_vacios(df, alcance, columna_especifica=None, accion='eliminar'):
-    """
-    Maneja los valores vacíos en un DataFrame de pandas.
-
-    Parámetros:
-    df (pandas.DataFrame): DataFrame a procesar.
-    alcance (str): 'todo' para todo el DataFrame, 'columna_especifica' para una columna.
-    columna_especifica (str, opcional): Columna específica a procesar.
-    accion (str): Acción para manejar valores vacíos ('eliminar', 'cero_no_definido', 'media_mas_comun').
-
-    Retorna:
-    tuple: DataFrame modificado, diccionario con información sobre el resultado.
-    """
-
+def manejar_valores_vacios(df, alcance, columnas_a_manipular=None, accion='eliminar'):
     resultado = {
         'modificadas': [],
-        'errores': []
+        'errores': [],
+        'no_modificadas': [] 
     }
 
     def manejar_columna(col):
         try:
-            if accion == 'eliminar':
-                df.dropna(subset=[col], inplace=True)
-            elif accion == 'cero_no_definido':
-                reemplazo = 0 if pd.api.types.is_numeric_dtype(df[col]) else "No definido"
-                df[col].fillna(reemplazo, inplace=True)
-            elif accion == 'media_mas_comun':
-                if pd.api.types.is_numeric_dtype(df[col]):
-                    df[col].fillna(df[col].mean(), inplace=True)
-                else:
-                    valor_mas_comun = df[col].mode()[0]
-                    df[col].fillna(valor_mas_comun, inplace=True)
-
-            resultado['modificadas'].append(col)
+            if df[col].isna().any():  # Comprobar si la columna tiene valores NaN
+                if accion == 'eliminar':
+                    df.dropna(subset=[col], inplace=True)
+                elif accion == 'cero_no_definido':
+                    reemplazo = 0 if pd.api.types.is_numeric_dtype(df[col]) else "No definido"
+                    df[col].fillna(reemplazo, inplace=True)
+                elif accion == 'media_mas_comun':
+                    if pd.api.types.is_numeric_dtype(df[col]):
+                        df[col].fillna(df[col].mean(), inplace=True)
+                    else:
+                        valor_mas_comun = df[col].mode()[0] if not df[col].mode().empty else "No definido"
+                        df[col].fillna(valor_mas_comun, inplace=True)
+                resultado['modificadas'].append(col)
+            else:
+                resultado['no_modificadas'].append(col)  # La columna no tiene valores NaN
         except Exception as e:
             resultado['errores'].append(f"Error al manejar valores vacíos en {col}: {str(e)}")
 
-    if alcance == 'todo':
-        for col in df.columns:
-            manejar_columna(col)
-    elif alcance == 'columna_especifica' and columna_especifica:
-        if columna_especifica in df.columns:
-            manejar_columna(columna_especifica)
-        else:
-            resultado['errores'].append(f"Columna {columna_especifica} no encontrada.")
+    try:
+        if alcance == 'todo':
+            for col in df.columns:
+                manejar_columna(col)
+        elif alcance == 'columna_especifica':
+            if columnas_a_manipular:
+                for columna in columnas_a_manipular:
+                    if columna in df.columns:
+                        manejar_columna(columna)
+                    else:
+                        resultado['errores'].append(f"Columna {columna} no encontrada.")
+            else:
+                resultado['errores'].append("No se proporcionaron columnas para manejar.")
+    except Exception as e:
+        resultado['errores'].append(f"Error general en el manejo de valores vacíos: {e}")
 
     return df, resultado
 
 
-
-def procesar_outliers_iqr(df, columnas=None, umbral_iqr=1.5, accion='ajustar'):
-    """
-    Detecta y procesa outliers en un DataFrame de pandas utilizando el método IQR.
-    Los outliers pueden ser ajustados o eliminados según el parámetro 'accion'.
-
-    Parámetros:
-    df (pandas.DataFrame): DataFrame a ser procesado.
-    columnas (list, opcional): Lista de columnas a revisar. Si es None, se revisan todas las columnas numéricas.
-    umbral_iqr (float): Multiplicador del IQR para definir los límites de outliers.
-    accion (str): 'ajustar' para ajustar los valores de outliers, 'eliminar' para eliminar las filas con outliers.
-
-    Retorna:
-    tuple: DataFrame modificado y un diccionario con información sobre los outliers procesados.
-    """
-
-    resultado = {
-        'ajustados': [],
-        'eliminados': [],
-        'errores': []
-    }
+def procesar_outliers_iqr(df, columnas_a_manipular=None, umbral_iqr=1.5, accion='ajustar'):
+    resultado = {'ajustados': [], 'eliminados': [], 'errores': [], 'sin_outliers': []}
 
     def procesar_columna(col):
         try:
             Q1 = df[col].quantile(0.25)
             Q3 = df[col].quantile(0.75)
             IQR = Q3 - Q1
-
             limite_inferior = Q1 - umbral_iqr * IQR
             limite_superior = Q3 + umbral_iqr * IQR
 
+            outliers = (df[col] < limite_inferior) | (df[col] > limite_superior)
+
+            if not outliers.any():
+                resultado['sin_outliers'].append(col)
+                return
+
             if accion == 'ajustar':
-                outliers_inferiores = df[col] < limite_inferior
-                outliers_superiores = df[col] > limite_superior
-
-                # Ajustar outliers
-                df.loc[outliers_inferiores, col] = limite_inferior
-                df.loc[outliers_superiores, col] = limite_superior
-
-                # Agregar índices ajustados al resultado
-                indices_ajustados = df[outliers_inferiores | outliers_superiores].index.tolist()
-                resultado['ajustados'].extend(indices_ajustados)
+                df[col] = df[col].clip(lower=limite_inferior, upper=limite_superior)
+                resultado['ajustados'].append(col)
 
             elif accion == 'eliminar':
-                # Eliminar filas con outliers
-                outliers = (df[col] < limite_inferior) | (df[col] > limite_superior)
                 indices_eliminados = df[outliers].index
                 df.drop(indices_eliminados, inplace=True)
-
-                # Agregar índices eliminados al resultado
                 resultado['eliminados'].extend(indices_eliminados.tolist())
 
         except Exception as e:
             resultado['errores'].append(f"Error al procesar {col}: {e}")
 
-    # Definir columnas a revisar
-    columnas_a_revisar = columnas if columnas is not None else df.select_dtypes(include=['number']).columns
-
+    columnas_a_revisar = columnas_a_manipular if columnas_a_manipular else df.select_dtypes(include=['number']).columns
     for col in columnas_a_revisar:
         procesar_columna(col)
 
     return df, resultado
 
-def filtrar_filas_por_condicion(df, columnas, condicion):
-    """
-    Filtra filas en un DataFrame de pandas basado en una condición en columnas específicas.
-
-    Parámetros:
-    df (pandas.DataFrame): DataFrame a procesar.
-    columnas (list): Lista de columnas numéricas a evaluar.
-    condicion (func): Función que toma un valor y devuelve True si la fila debe mantenerse.
-
-    Retorna:
-    tuple: DataFrame modificado, diccionario con información sobre las filas eliminadas.
-    """
-
-    resultado = {
-        'filas_eliminadas': 0,
-        'errores': []
-    }
+def filtrar_filas_por_condicion(df, columnas_a_manipular, condicion_str):
+    resultado = {'filas_eliminadas': 0, 'errores': [], 'indices_eliminados': []}
 
     try:
-        # Aplicar la condición a las columnas especificadas y eliminar filas que no la cumplen
-        filtro = df[columnas].apply(condicion)
-        filas_originales = len(df)
-        df = df[filtro.all(axis=1)]
-        filas_despues = len(df)
 
-        resultado['filas_eliminadas'] = filas_originales - filas_despues
-
+        condicion = eval("lambda x: " + condicion_str)
+    except SyntaxError as e:
+        resultado['errores'].append(f"Error de sintaxis en la condición: {str(e)}")
+        return df, resultado
     except Exception as e:
-        resultado['errores'].append(f"Error al filtrar filas: {str(e)}")
+        resultado['errores'].append(f"Error en la condición proporcionada: {str(e)}")
+        return df, resultado
+
+    if columnas_a_manipular:
+        df_inicial = df.copy()
+        for columna in columnas_a_manipular:
+            if columna in df.columns:
+                try:
+                    filtro = df[columna].apply(condicion)
+                    df = df[filtro]
+                except Exception as e:
+                    resultado['errores'].append(f"Error al aplicar la condición en {columna}: {str(e)}")
+            else:
+                resultado['errores'].append(f"Columna {columna} no encontrada.")
+        filas_eliminadas = df_inicial.index.difference(df.index)
+        resultado['filas_eliminadas'] = len(filas_eliminadas)
+        resultado['indices_eliminados'] = filas_eliminadas.tolist()
+    else:
+        resultado['errores'].append("No se proporcionaron columnas para filtrar.")
 
     return df, resultado
+
+
+"""
+    FUNCIONES COMUNES PARA LAS VIEWS DE LIMPIEZA DE DATOS
+"""
+def leer_csv_o_error(request, file_name):
+    file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+    df, error = leer_y_verificar_csv(file_path)
+    if error:
+        if error == "CSV vacío":
+            # Guardar un mensaje en la sesión
+            request.session['csv_vacio_mensaje'] = 'El archivo CSV está vacío. Por favor, carga un nuevo archivo.'
+            # Redirige al usuario a la página de carga de CSV
+            return None, redirect('file_handler:cargar_archivo'), None
+        else:
+            return None, HttpResponse(error, status=404), None
+    return df, None, file_path
+
+def leer_y_verificar_csv(file_path):
+    if not os.path.exists(file_path):
+        return None, "Archivo no encontrado."
+    try:
+        df = pd.read_csv(file_path)
+        if df.empty or df.columns.size == 0:
+            # DataFrame está vacío
+            return None, "CSV vacío"
+    except pd.errors.EmptyDataError:
+        # El archivo CSV está completamente vacío
+        return None, "CSV vacío"
+    except Exception as e:
+        # Otros errores al leer el CSV
+        return None, str(e)
+
+    return df, None
+
+
+def guardar_csv(df, file_path):
+    df.to_csv(file_path, index=False)
+
+def crear_inicio_tabla(df):
+    return df.head(20).to_html(classes='table table-striped', index=True)
+
+def guardar_resultado_en_sesion(request, resultado):
+    info_text = "\n".join(
+        f"{key}: {', '.join(map(str, value)) if isinstance(value, list) else value}"
+        for key, value in resultado.items() if value
+    )
+    request.session['info'] = info_text

@@ -4,13 +4,13 @@
 
 <form action="{% url 'data_cleaning:filtrar_datos' file_name=file_name %}" method="post">  <!-- Cambia 'nombre_de_tu_vista_filtrar_filas' por el nombre de tu vista de Django -->
     {% csrf_token %}
-    <h3>Filtrar Filas por Condición</h3>
+    <h3>Filtrar datos por condición</h3>
 
     <div class="form-group">
-        <label class="label-opciones-limpieza" for="columnas_a_filtrar">Seleccione las columnas numéricas:</label>
+        <label class="label-opciones-limpieza" for="columnas_a_filtrar">Seleccione las columnas que desea evaluar:</label>
         {% for columna in columnas %}
         <div class="container-fluid">
-            <input class="checkbox" type="checkbox" name="columnas_a_filtrar" value="{{ columna }}" id="check_{{ columna }}">
+            <input class="checkbox" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
             <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
                 {{ columna }}
             </label>
@@ -19,9 +19,10 @@
     </div>
 
     <div class="form-group">
-        <label class="label-opciones-limpieza" for="condicion">Defina la Condición de Filtrado:</label>
+        <label class="label-opciones-limpieza" for="condicion">Defina la condición de filtrado:</label>
         <input type="text" class="form-control input-opciones-limpieza" id="condicion" name="condicion" placeholder="Ej: x > 0">
-        <small class="form-text text-muted">Ingrese una expresión de Python válida. Ejemplo: x > 0 para valores mayores a 0.</small>
+        <small class="form-text text-muted">Ingrese una expresión válida. Ejemplo: x > 0 para conservar valores mayores a 0.</small>
+        <small class="form-text text-muted pt-0">Las filas que no pasen el filtro serán eliminadas.</small>
     </div>
 
     {{ block.super }}

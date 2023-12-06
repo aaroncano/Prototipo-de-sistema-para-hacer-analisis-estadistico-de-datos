@@ -4,6 +4,14 @@
 {% block title %}<title>Carga de Archivo CSV</title>{% endblock %}
 
 {% block content %}
+    <div class="container-fluid mt-3 mb-3 pt-5 pb-5">
+        {% if mensaje_error %}
+            <div class="alert alert-info p">
+                {{ mensaje_error }}
+            </div>
+        {% endif %}
+    </div>
+
     <div class="centrado">
         <h2>Carga tus datos</h2>
         <form method="post" enctype="multipart/form-data">

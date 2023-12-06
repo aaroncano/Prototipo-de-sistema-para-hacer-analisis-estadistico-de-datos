@@ -4,13 +4,13 @@
 
 <form action="{% url 'data_cleaning:eliminar_columnas' file_name=file_name %}" method="post">
     {% csrf_token %}
-    <h3>Eliminar columnas de la tabla</h3>
+    <h3>Eliminar columnas</h3>
 
     <div class="columna-opciones" id="group_eliminar_columnas">
         <label class="label-opciones-limpieza" for="alcance">Seleccione las columnas que desea eliminar:</label>
         {% for columna in columnas %}
         <div class="container-fluid">
-            <input class="checkbox" type="checkbox" name="columnas_a_eliminar" value="{{ columna }}" id="check_{{ columna }}">
+            <input class="checkbox" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
             <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
                 {{ columna }}
             </label>

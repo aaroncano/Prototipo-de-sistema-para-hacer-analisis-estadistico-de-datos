@@ -7,25 +7,22 @@ import pandas as pd
 from .forms import CargaCSVForm
 
 def cargar_archivo(request):
+    mensaje_error = request.session.get('csv_vacio_mensaje', None)
+    request.session['csv_vacio_mensaje'] = None
+
     if request.method == 'POST':
         form = CargaCSVForm(request.POST, request.FILES)
         if form.is_valid():
             archivo_csv = request.FILES['archivo_csv']
             #se guarda el file_path por si se necesita usar después
             file_path = handle_uploaded_file(archivo_csv)
-            
             return redirect('file_handler:revisar_csv', file_name=archivo_csv.name)
     else:
         form = CargaCSVForm()
-    return render(request, 'file_handler/cargar_archivo.html', {'form': form})
-
-def handle_uploaded_file(f):
-    with open(os.path.join(settings.MEDIA_ROOT, f.name), 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
-            
-    # Retornar la ruta del archivo para usarla después si es necesario
-    return os.path.join(settings.MEDIA_ROOT, f.name)
+    return render(request, 'file_handler/cargar_archivo.html', {
+        'form': form,
+        'mensaje_error': mensaje_error
+    })
 
 def revisar_csv(request, file_name):
     file_path = os.path.join(settings.MEDIA_ROOT, file_name)
@@ -38,6 +35,14 @@ def revisar_csv(request, file_name):
         # Maneja el caso en que el archivo no exista
         return HttpResponse("Archivo no encontrado", status=404)
     
+def handle_uploaded_file(f):
+    with open(os.path.join(settings.MEDIA_ROOT, f.name), 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+            
+    # Retornar la ruta del archivo para usarla después si es necesario
+    return os.path.join(settings.MEDIA_ROOT, f.name)
+
 def cargar_mas_filas(request, file_name):
     file_path = os.path.join(settings.MEDIA_ROOT, file_name)
 

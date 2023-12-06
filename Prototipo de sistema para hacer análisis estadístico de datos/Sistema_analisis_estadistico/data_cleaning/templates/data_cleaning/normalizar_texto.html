@@ -4,22 +4,22 @@
 
 <form action="{% url 'data_cleaning:normalizar_texto' file_name=file_name %}" method="post">
     {% csrf_token %}
-    <h3>Normalizar Texto</h3>
+    <h3>Normalizar texto</h3>
 
     <div class="form-group">
-        <label class="label-opciones-limpieza" for="alcance">Seleccione el alcance de la normalización:</label>
+        <label class="label-opciones-limpieza" for="alcance">Seleccione el alcance de la normalización de texto:</label>
         <select class="form-control input-opciones-limpieza" id="alcance" name="alcance">
             <option value="nombres_columnas">Nombres de Columnas</option>
-            <option value="columna_especifica">Columna Específica</option>
-            <option value="todo">Todo el CSV</option>
+            <option value="columna_especifica">Elegir columnas</option>
+            <option value="todo">Todo el dataset</option>
         </select>
     </div>
 
     <div class="form-group" id="group_columna_especifica" style="display: none;">
-        <label class="label-opciones-limpieza" for="columna_especifica">Elija la(s) columna(s) a normalizar:</label>
+        <label class="label-opciones-limpieza" for="columna_especifica">Seleccione las columnas a normalizar:</label>
         {% for columna in columnas %}
         <div class="container-fluid">
-            <input class="checkbox" type="checkbox" name="columnas_a_normalizar" value="{{ columna }}" id="check_{{ columna }}">
+            <input class="checkbox" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
             <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
                 {{ columna }}
             </label>
