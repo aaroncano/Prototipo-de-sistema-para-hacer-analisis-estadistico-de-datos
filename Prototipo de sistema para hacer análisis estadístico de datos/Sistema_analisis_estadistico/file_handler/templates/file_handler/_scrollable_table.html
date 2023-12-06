@@ -1,11 +1,33 @@
 <h3>{% block titulo_tabla %}Tus datos{% endblock %}</h3> 
 
 <div>
+    <!-- Botones para navegar entre las páginas -->
+    <button onclick="cambiarVersion('atras')">Atrás</button>
+    <button onclick="cambiarVersion('adelante')">Adelante</button>
+
     <div class="scrollable-table">
         <!-- Muestra el DataFrame como tabla HTML -->
-        <table>
+        <table id="tabla-datos-csv">
             {{ dataframe|safe }}
         </table>
     </div>    
 </div>
 
+<script>
+    function cambiarVersion(direccion) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'file_handler:vista_version_anterior', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // Actualizar la parte de la página con la nueva información
+                // Por ejemplo, actualizar una tabla o una sección del contenido
+                document.getElementById('id_del_elemento_a_actualizar').innerHTML = this.responseText;
+            }
+        };
+
+        xhr.send('direccion=' + direccion);
+    }
+</script>

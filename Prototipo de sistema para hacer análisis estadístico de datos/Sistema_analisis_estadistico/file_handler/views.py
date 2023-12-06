@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from .forms import CargaCSVForm
 
 from utils.tablas_utils import crear_inicio_tabla
-from utils.csv_utils import leer_csv_o_error, handle_uploaded_file
+from utils.csv_utils import leer_csv_o_error, handle_uploaded_file, ir_version_anterior, ir_version_siguiente
 
 def cargar_archivo(request):
     mensaje_error = request.session.get('csv_vacio_mensaje', None)
@@ -31,6 +31,26 @@ def revisar_csv(request, file_name):
         'dataframe': crear_inicio_tabla(df),
         'file_name': file_name
     })
+
+
+# Funciones para cambiar de versión de archivo
+def vista_version_anterior(request):
+    file_name = ir_version_anterior(request)
+    if file_name:
+        return JsonResponse({'file_name': file_name})
+    # Manejo de error o redirección si no hay versión anterior
+    else:
+        return JsonResponse({'error': 'No hay versión anterior disponible'}, status=400)
+
+def vista_version_siguiente(request):
+    file_name = ir_version_siguiente(request)
+    if file_name:
+        return JsonResponse({'file_name': file_name})
+    else:
+        return JsonResponse({'error': 'No hay versión siguiente disponible'}, status=400)
+    # Manejo de error o redirección si no hay versión siguiente
+
+
 
 def cargar_mas_filas(request, file_name):
     df, error_response, _ = leer_csv_o_error(request, file_name)

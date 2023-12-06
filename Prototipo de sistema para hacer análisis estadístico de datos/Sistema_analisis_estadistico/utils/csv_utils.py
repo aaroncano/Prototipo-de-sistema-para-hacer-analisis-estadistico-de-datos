@@ -52,19 +52,31 @@ def guardar_csv(df, file_path):
 
 
 
+
+
 # VERSIONADO DE CSV
 def gestionar_version_archivo(request, file_name):
-    # Crear una copia del archivo
     new_file_name = crear_copia_archivo(file_name)
 
+    historial = request.session.get('file_versions', [])
+    indice_actual = request.session.get('indice_version_actual', -1)
+
+    # Elimina las versiones "futuras" si el usuario vuelve a una versión anterior 
+    # y luego realiza un cambio
+    historial = historial[:indice_actual + 1]
+
+    historial.append(new_file_name)
+    indice_actual = len(historial) - 1
+
     # Actualizar la sesión con la nueva versión del archivo
-    request.session['file_versions'] = request.session.get('file_versions', [])
-    request.session['file_versions'].append(new_file_name)
+    request.session['file_versions'] = historial
+    request.session['indice_version_actual'] = indice_actual
     request.session.modified = True
 
     # Devolver el nombre del nuevo archivo y su ruta
     new_file_path = os.path.join(settings.TEMP_FILES_DIR, new_file_name)
     return new_file_name, new_file_path
+
 
 def crear_copia_archivo(file_name):
     original_file_path = os.path.join(settings.TEMP_FILES_DIR, file_name)
@@ -72,3 +84,24 @@ def crear_copia_archivo(file_name):
     new_file_path = os.path.join(settings.TEMP_FILES_DIR, new_file_name)
     shutil.copy2(original_file_path, new_file_path)
     return new_file_name
+
+
+# funcionalidad para ir a versiones anteriores o siguientes
+def ir_version_anterior(request):
+    indice_actual = request.session.get('indice_version_actual', 0)
+    if indice_actual > 0:
+        indice_actual -= 1
+        request.session['indice_version_actual'] = indice_actual
+        request.session.modified = True
+        return request.session['file_versions'][indice_actual]
+    return None
+
+def ir_version_siguiente(request):
+    indice_actual = request.session.get('indice_version_actual', 0)
+    historial = request.session.get('file_versions', [])
+    if indice_actual < len(historial) - 1:
+        indice_actual += 1
+        request.session['indice_version_actual'] = indice_actual
+        request.session.modified = True
+        return request.session['file_versions'][indice_actual]
+    return None
