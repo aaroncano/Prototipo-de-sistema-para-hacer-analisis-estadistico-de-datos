@@ -1,0 +1,38 @@
+{% extends "data_cleaning/plantilla_opciones.html" %}
+
+{% block formulario %}
+
+<form action="{% url 'data_cleaning:procesar_outliers' file_name=file_name %}" method="post">  <!-- Cambia 'nombre_de_tu_vista' por el nombre de tu vista de Django -->
+    {% csrf_token %}
+    <h3>Procesar Outliers</h3>
+
+    <div class="form-group">
+        <label for="umbral_iqr" class="label-opciones-limpieza">Umbral IQR:</label>
+        <input type="number" class="form-control input-opciones-limpieza" id="umbral_iqr" name="umbral_iqr" value="1.5" step="0.1">
+    </div>
+
+    <div class="form-group">
+        <label class="label-opciones-limpieza" for="columnas_a_procesar">Seleccione las columnas:</label>
+        {% for columna in columnas %}
+        <div class="container-fluid">
+            <input class="checkbox" type="checkbox" name="columnas_a_procesar" value="{{ columna }}" id="check_{{ columna }}">
+            <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
+                {{ columna }}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="form-group">
+        <label class="label-opciones-limpieza" for="accion">Acción para los outliers:</label>
+        <select class="form-control input-opciones-limpieza" id="accion" name="accion">
+            <option value="ajustar">Ajustar Outliers</option>
+            <option value="eliminar">Eliminar Filas con Outliers</option>
+        </select>
+    </div>
+
+    {{ block.super }}
+
+</form>
+
+{% endblock %}
