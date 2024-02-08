@@ -1,0 +1,26 @@
+{% extends "file_handler/base.html" %}
+
+{% block title %}<title>Menu Principal</title>{% endblock %}
+
+{% block content %}
+
+    {% include "file_handler/_scrollable_table.html" %}
+
+    <div class="contenedor-flex-between">
+        <div class="contenedor-izq">
+            <button type="submit" class="btn boton-secundario">Exportar CSV</button>
+        </div>
+        <div class="contenedor-der">   
+            <form action="{% url 'data_cleaning:opciones_limpieza' file_name=file_name %}" method="get">
+                <button type="submit" class="btn boton-primario">Limpiar datos</button>
+            
+            </form>
+            <button type="submit" class="btn boton-primario">Transformar datos</button>
+
+            <button type="submit" class="btn boton-primario">Analizar datos</button>
+
+            
+        </div>    
+    </div>
+
+{% endblock %}

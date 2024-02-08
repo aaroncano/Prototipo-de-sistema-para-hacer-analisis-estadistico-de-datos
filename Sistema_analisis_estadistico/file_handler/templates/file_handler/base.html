@@ -1,0 +1,129 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {% block title %} <title>Sistema de Análisis Estadístico</title> {% endblock %}
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    {% block styles %} 
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}"> 
+    {% endblock %}
+
+</head>
+<body>
+    
+    <div class="main-content">
+        <header>
+            <!-- Aquí podrías incluir la imagen utilizando el tag de imagen de Django -->
+            {% block header %}
+            <div class="contenedor-flex-between">
+                <div>    
+                    <img id="logo" class="ml-5" src="{% static 'images/logo.png' %}" alt="Logo IPN" />
+                    <h1 class="ml-3">Instituto Politécnico Nacional - UPIIZ</h1>
+                </div>
+                <div class="centrado">
+                    <h1 class="mr-5">Sistema de Análisis Estadístico de Datos</h1>
+                </div>
+            </div>
+
+            {% endblock %}
+        </header>
+        
+        <div class="contenedor-margen">
+            {% block content %}
+
+                <!-- El contenido específico de cada página irá aquí. -->
+
+            {% endblock %}
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="centrado">
+            <div class="contenedor-margen-grande">
+                <p>
+                    D.R. Instituto Politécnico Nacional (IPN). Av. Luis Enrique Erro S/N, Unidad Profesional Adolfo López Mateos, Zacatenco, Alcaldía Gustavo A. Madero, C.P. 07738, Ciudad de México. Conmutador: 55 57 29 60 00 / 55 57 29 63 00.
+                </p>
+                <p>
+                    Esta página es una obra intelectual protegida por la Ley Federal del Derecho de Autor, puede ser reproducida con fines no lucrativos, siempre y cuando no se mutile, se cite la fuente completa y su dirección electrónica; su uso para otros fines, requiere autorización previa y por escrito de la Dirección General del Instituto.
+                </p>            
+                <div class="contenedor-izq">
+                    <img id="footer_img" src="{% static 'images/educacion.png' %}" alt="EDUCACIÓN">
+                </div>    
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block scripts %}
+        <!-- Scripts específicos de cada página irán aquí. -->
+    {% endblock %}
+    <script>
+        var file_name = "{{ file_name }}";
+        var startRow = 20;
+        var isLoading = false;
+        var isAllDataLoaded = false;
+        
+        function fetchMoreRows() {
+            if (isLoading || isAllDataLoaded) return;
+            
+            isLoading = true;
+            fetch(`/file_handler/cargar_mas_filas/${file_name}?start=${startRow}`)
+                .then(response => response.json())
+                .then(json => {
+                    let data = json.data.trim();
+                    if (data) {
+                        var tableBody = document.querySelector('.scrollable-table table tbody');
+                        tableBody.insertAdjacentHTML('beforeend', data);
+                        startRow += 20;
+                    } else {
+                        isAllDataLoaded = true; // No más datos para cargar
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Mostrar mensaje de error al usuario aquí, si es necesario
+                })
+                .finally(() => {
+                    isLoading = false; // Restablece el flag independientemente del resultado
+                    // Ocultar spinner de carga aquí, si es necesario
+                });
+        }
+        
+        // Debounce function to limit how often a function can fire
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var scrollableTable = document.querySelector('.scrollable-table');
+            if (scrollableTable) {  // Asegúrate de que el elemento existe
+                scrollableTable.onscroll = debounce(function() {
+                    // Comprueba que el desplazamiento se aproxime al final del contenedor
+                    var scrollBottom = scrollableTable.scrollHeight - scrollableTable.clientHeight - scrollableTable.scrollTop;
+                    if (scrollBottom < 100 && !isLoading) {
+                        fetchMoreRows();
+                    }
+                }, 100);
+            }
+        });
+        
+    </script>
+
+</body>
+</html>
+
