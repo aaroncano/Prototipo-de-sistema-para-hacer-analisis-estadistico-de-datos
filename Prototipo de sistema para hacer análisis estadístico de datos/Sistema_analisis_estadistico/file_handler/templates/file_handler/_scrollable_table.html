@@ -2,29 +2,49 @@
 
 <div>
     <!-- Botones para navegar entre las páginas -->
-    <button onclick="cambiarVersion('atras')">Atrás</button>
-    <button onclick="cambiarVersion('adelante')">Adelante</button>
+    <!-- <button onclick="cambiarVersion('atras')">Atrás</button>
+    <button onclick="cambiarVersion('adelante')">Adelante</button>-->
 
     <div class="scrollable-table">
         <!-- Muestra el DataFrame como tabla HTML -->
-        <table id="tabla-datos-csv">
+        <table id="tabla-datos-csv" >
             {{ dataframe|safe }}
         </table>
     </div>    
 </div>
 
 <script>
+    // Función para obtener el valor de una cookie por su nombre
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     function cambiarVersion(direccion) {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'file_handler:vista_version_anterior', true);
+        xhr.open('POST', '{% url 'file_handler:cambiar_version' %}', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+
+        // Obtener el token CSRF de las cookies y añadirlo a la solicitud
+        var csrftoken = getCookie('csrftoken');
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
 
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                // Actualizar la parte de la página con la nueva información
-                // Por ejemplo, actualizar una tabla o una sección del contenido
-                document.getElementById('id_del_elemento_a_actualizar').innerHTML = this.responseText;
+                var response = JSON.parse(this.responseText);
+                if (response.html) {
+                    document.getElementById('tabla-datos-csv').innerHTML = response.html;
+                }
             }
         };
 

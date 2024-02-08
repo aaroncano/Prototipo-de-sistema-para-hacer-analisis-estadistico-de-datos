@@ -164,7 +164,6 @@ def filtrar_filas_por_condicion(df, columnas_a_manipular, condicion_str):
     resultado = {'filas_eliminadas': 0, 'errores': [], 'indices_eliminados': []}
 
     try:
-
         condicion = eval("lambda x: " + condicion_str)
     except SyntaxError as e:
         resultado['errores'].append(f"Error de sintaxis en la condición: {str(e)}")

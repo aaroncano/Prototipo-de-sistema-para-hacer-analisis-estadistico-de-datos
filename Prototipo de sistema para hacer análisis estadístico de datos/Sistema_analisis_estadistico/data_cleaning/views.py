@@ -4,11 +4,10 @@ from .utils.views_utils import guardar_resultado_en_sesion, preparar_datos_para_
 from utils.csv_utils import gestionar_version_archivo, leer_csv_o_error, guardar_csv
 from utils.tablas_utils import crear_inicio_tabla
 
-# Create your views here.
 def opciones_limpieza_hub(request, file_name):
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo') # necesita cambiarse. Muy primitivo.
     
     df_html = crear_inicio_tabla(df)
     info = request.session.get('info', None) # Obtiene el mensaje de éxito o error
@@ -21,11 +20,12 @@ def opciones_limpieza_hub(request, file_name):
     })
 
 
+
 def eliminar_columnas(request, file_name):
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo')
 
     # Manejo de POST
     if request.method == 'POST':
@@ -52,7 +52,7 @@ def normalizar_texto(request, file_name):
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo')
 
     # Manejo de POST
     if request.method == 'POST':
@@ -79,7 +79,7 @@ def manejar_valores_vacios(request, file_name):
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo')
 
     # Manejo de POST
     if request.method == 'POST':
@@ -107,7 +107,7 @@ def procesar_outliers(request, file_name):
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo')
 
     # Manejo de POST
     if request.method == 'POST':
@@ -135,7 +135,7 @@ def filtrar_datos(request, file_name):
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
-        return error_response
+        return redirect('file_handler:cargar_archivo')
 
     # Manejo de POST
     if request.method == 'POST':

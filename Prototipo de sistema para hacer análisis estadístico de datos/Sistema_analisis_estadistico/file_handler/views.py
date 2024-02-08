@@ -33,25 +33,9 @@ def revisar_csv(request, file_name):
     })
 
 
-# Funciones para cambiar de versión de archivo
-def vista_version_anterior(request):
-    file_name = ir_version_anterior(request)
-    if file_name:
-        return JsonResponse({'file_name': file_name})
-    # Manejo de error o redirección si no hay versión anterior
-    else:
-        return JsonResponse({'error': 'No hay versión anterior disponible'}, status=400)
+########################################################################################################
 
-def vista_version_siguiente(request):
-    file_name = ir_version_siguiente(request)
-    if file_name:
-        return JsonResponse({'file_name': file_name})
-    else:
-        return JsonResponse({'error': 'No hay versión siguiente disponible'}, status=400)
-    # Manejo de error o redirección si no hay versión siguiente
-
-
-
+# Cargar más filas
 def cargar_mas_filas(request, file_name):
     df, error_response, _ = leer_csv_o_error(request, file_name)
     if error_response:
@@ -61,3 +45,20 @@ def cargar_mas_filas(request, file_name):
     df_partial = df.iloc[start_row:start_row + 20]
     df_html = df_partial.to_html(classes='table table-striped', index=True, header=False)
     return JsonResponse({'data': df_html})
+
+
+# Cambiar de versión de archivo
+def cambiar_version(request):
+    if request.method == 'POST':
+        direccion = request.POST.get('direccion')
+        if direccion == 'atras':
+            file_name = ir_version_anterior(request)
+        elif direccion == 'adelante':
+            file_name = ir_version_siguiente(request)
+
+        if file_name:
+            df, _, _ = leer_csv_o_error(request, file_name)
+            df_html = crear_inicio_tabla(df)
+            return JsonResponse({'html': df_html})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)

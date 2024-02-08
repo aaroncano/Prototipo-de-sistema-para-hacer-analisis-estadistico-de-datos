@@ -43,9 +43,8 @@ def leer_y_verificar_csv(file_path):
 def manejar_error_csv(request, error, file_name):
     if error == "CSV vacío":
         request.session['csv_vacio_mensaje'] = 'El archivo CSV está vacío. Por favor, carga un nuevo archivo.'
-        return redirect('file_handler:cargar_archivo')
     else:
-        return HttpResponse(error, status=404)
+        request.session['csv_vacio_mensaje'] = 'El archivo CSV está vacío u ocurrió otro error inesperado. Por favor, carga un nuevo archivo.'
 
 def guardar_csv(df, file_path):
     df.to_csv(file_path, index=False)
