@@ -62,3 +62,6 @@ def cambiar_version(request):
             return JsonResponse({'html': df_html})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def prueba_base(request):
+    return render(request, 'layouts/base.html')
