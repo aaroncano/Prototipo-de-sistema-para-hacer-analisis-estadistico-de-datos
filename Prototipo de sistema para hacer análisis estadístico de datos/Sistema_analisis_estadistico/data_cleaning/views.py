@@ -36,7 +36,7 @@ def eliminar_columnas(request, file_name):
         
         guardar_resultado_en_sesion(request, resultado)
         guardar_csv(df_procesado, new_file_path)
-        return redirect('data_cleaning:opciones_limpieza', file_name=new_file_name)
+        return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
     # Preparación para el método GET
     df_html, columnas = preparar_datos_para_get(df)
@@ -64,7 +64,7 @@ def normalizar_texto(request, file_name):
 
         guardar_resultado_en_sesion(request, resultado)
         guardar_csv(df_procesado, new_file_path)
-        return redirect('data_cleaning:opciones_limpieza', file_name=new_file_name)
+        return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
     # Preparación para el método GET
     df_html, columnas = preparar_datos_para_get(df, include_dtypes=['object'])
@@ -92,7 +92,7 @@ def manejar_valores_vacios(request, file_name):
 
         guardar_resultado_en_sesion(request, resultado)
         guardar_csv(df_procesado, new_file_path)
-        return redirect('data_cleaning:opciones_limpieza', file_name=new_file_name)
+        return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
     # Preparación para el método GET
     df_html, columnas = preparar_datos_para_get(df)
@@ -120,7 +120,7 @@ def procesar_outliers(request, file_name):
 
         guardar_resultado_en_sesion(request, resultado)
         guardar_csv(df_procesado, new_file_path)
-        return redirect('data_cleaning:opciones_limpieza', file_name=new_file_name)
+        return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
     # Preparación para el método GET
     df_html, columnas = preparar_datos_para_get(df, include_dtypes=['number'])
@@ -147,7 +147,7 @@ def filtrar_datos(request, file_name):
 
         guardar_resultado_en_sesion(request, resultado)
         guardar_csv(df_procesado, new_file_path)
-        return redirect('data_cleaning:opciones_limpieza', file_name=new_file_name)
+        return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
     # Preparación para el método GET
     df_html, columnas = preparar_datos_para_get(df, include_dtypes=['number'])

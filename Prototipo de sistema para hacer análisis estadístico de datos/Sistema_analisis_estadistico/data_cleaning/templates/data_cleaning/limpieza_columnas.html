@@ -1,23 +1,30 @@
 {% extends "data_cleaning/plantilla_opciones.html" %}
+{% block title %}Eliminar columnas{% endblock %}
 
 {% block formulario %}
 
-<form action="{% url 'data_cleaning:eliminar_columnas' file_name=file_name %}" method="post">
-    {% csrf_token %}
-    <h3>Eliminar columnas</h3>
+    <form action="{% url 'data_cleaning:eliminar_columnas' file_name=file_name %}" method="post">
+            {% csrf_token %}
+            <h5>Eliminar columnas</h5>
 
-    <div class="columna-opciones" id="group_eliminar_columnas">
-        <label class="label-opciones-limpieza" for="alcance">Seleccione las columnas que desea eliminar:</label>
-        {% for columna in columnas %}
-        <div class="container-fluid">
-            <input class="checkbox" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
-            <label class="label-opciones-limpieza ml-3" for="check_{{ columna }}">
-                {{ columna }}
-            </label>
-        </div>
-        {% endfor %}
-    </div>
-    {{ block.super }}
-</form>
+            <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
+                <div>
+                    <p>Seleccione las columnas que desea eliminar:</p>
+                    <div class="d-flex gap-3 flex-wrap mb-2">
+                        {% for columna in columnas %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                            <label class="form-check-label" for="check_{{ columna }}">
+                                {{ columna }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+            </div>
 
+            {{ block.super }}
+        </form>
+            
 {% endblock %}

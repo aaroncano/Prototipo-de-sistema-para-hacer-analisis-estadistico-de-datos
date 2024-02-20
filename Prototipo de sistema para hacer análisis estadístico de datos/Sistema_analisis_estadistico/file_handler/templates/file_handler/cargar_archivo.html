@@ -1,24 +1,40 @@
-{% extends "file_handler/base.html" %}
+{% extends "layouts/base-fullscreen.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}<title>Carga de Archivo CSV</title>{% endblock %}
+{% block title %}Carga de Archivo CSV{% endblock %}
 
 {% block content %}
+    {% if mensaje_error %}
     <div class="container-fluid mt-3 mb-3 pt-5 pb-5">
-        {% if mensaje_error %}
-            <div class="alert alert-info p">
-                {{ mensaje_error }}
+        <div class="alert alert-info p">
+            {{ mensaje_error }}
+        </div>
+    </div>
+    {% endif %}
+
+    <main>
+        <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow border-0 rounded p-4 p-lg-5 w-100 fmxw-500">
+                            <h1 class="h3">Sube tus datos</h1>
+                            <p class="mb-4">Carga tu dataset en formato CSV</p>
+
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    {{ form|crispy }}
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-gray-800">Cargar archivo</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
-    </div>
-
-    <div class="centrado">
-        <h2>Carga tus datos</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn boton-primario boton-centrar">Cargar Archivo</button>
-        </form>
-    </div>
+        </section>
+    </main>
+    
 {% endblock %}
-

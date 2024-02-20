@@ -1,20 +1,22 @@
-{% extends "file_handler/base.html" %}
+{% extends "layouts/base.html" %}
 
-{% block title %}<title>Opciones de Limpieza</title>{% endblock %}
+{% block title %}Limpieza{% endblock %}
 
 {% block content %}
-    <div class="contenedor-dos-columnas">
+<div class="d-flex flex-column gap-2">
+    <div class="bg-white rounded shadow p-4 mt-4 flex-shrink-1">
+        {% block formulario%}
         
-        {% block formulario %}
-        <div class="contenedor-der">
-            <a href="{% url 'data_cleaning:opciones_limpieza' file_name=file_name %}" class="btn boton-secundario">Volver al menú</a>
-            <button type="submit" class="btn boton-primario">Aplicar Limpieza</button>
+        <div>
+            <button type="submit" class="btn btn-primary">Aplicar Limpieza</button>
         </div>
-        {% endblock %} 
-        <div class="columna-tabla">
-            {% include "file_handler/_scrollable_table.html" %}
-        </div>
-    </div>
-   
 
+        {% endblock %}	
+    </div>
+
+    <div class="flex-fill">
+        {% include "file_handler/_scrollable_table.html" %}
+    </div>
+
+</div>
 {% endblock %}

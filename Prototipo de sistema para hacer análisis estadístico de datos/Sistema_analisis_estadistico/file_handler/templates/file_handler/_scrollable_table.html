@@ -1,17 +1,69 @@
-<h3>{% block titulo_tabla %}Tus datos{% endblock %}</h3> 
+{% comment %} <h3>{% block titulo_tabla %}Tus datos{% endblock %}</h3>  {% endcomment %}
 
-<div>
     <!-- Botones para navegar entre las páginas -->
     <!-- <button onclick="cambiarVersion('atras')">Atrás</button>
     <button onclick="cambiarVersion('adelante')">Adelante</button>-->
 
-    <div class="scrollable-table">
-        <!-- Muestra el DataFrame como tabla HTML -->
-        <table id="tabla-datos-csv" >
-            {{ dataframe|safe }}
-        </table>
-    </div>    
-</div>
+<div class="scrollable-table bg-white rounded shadow mb-4 mt-4">
+    <!-- Muestra el DataFrame como tabla HTML -->
+    {{ dataframe|safe }}
+</div>   
+
+<script>
+    var file_name = "{{ file_name }}";
+    var startRow = 20;
+    var isLoading = false;
+    var isAllDataLoaded = false;
+    
+    function fetchMoreRows() {
+        if (isLoading || isAllDataLoaded) return;
+        
+        isLoading = true;
+        fetch(`/file_handler/cargar_mas_filas/${file_name}?start=${startRow}`)
+            .then(response => response.json())
+            .then(json => {
+                let data = json.data.trim();
+                if (data) {
+                    var tableBody = document.querySelector('.scrollable-table table tbody');
+                    tableBody.insertAdjacentHTML('beforeend', data);
+                    startRow += 20;
+                } else {
+                    isAllDataLoaded = true; // No más datos para cargar
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Mostrar mensaje de error al usuario aquí, si es necesario
+            })
+            .finally(() => {
+                isLoading = false; // Restablece el flag independientemente del resultado
+                // Ocultar spinner de carga aquí, si es necesario
+            });
+    }
+    
+    // Debounce function to limit how often a function can fire
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        var scrollableTable = document.querySelector('.scrollable-table');
+        if (scrollableTable) {  // Asegúrate de que el elemento existe
+            scrollableTable.onscroll = debounce(function() {
+                // Comprueba que el desplazamiento se aproxime al final del contenedor
+                var scrollBottom = scrollableTable.scrollHeight - scrollableTable.clientHeight - scrollableTable.scrollTop;
+                if (scrollBottom < 100 && !isLoading) {
+                    fetchMoreRows();
+                }
+            }, 100);
+        }
+    });
+    
+</script>
 
 <script>
     // Función para obtener el valor de una cookie por su nombre

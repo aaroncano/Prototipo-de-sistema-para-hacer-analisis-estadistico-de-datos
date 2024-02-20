@@ -1,28 +1,21 @@
-{% extends "file_handler/base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %}<title>Menu Principal</title>{% endblock %}
 
 {% block content %}
-
-    {% include "file_handler/_scrollable_table.html" %}
-
-    <div class="contenedor-flex-between">
-        <div class="contenedor-izq">
-            <form action="{% url 'file_handler:cargar_archivo'%}" method="get">
-                <button type="submit" class="btn boton-secundario">Cargar nuevo dataset</button>
-            </form>
-            <button type="submit" class="btn boton-secundario">Exportar CSV</button>
+    {% if info %}
+        <div class="mt-4">
+        
+            <div class="alert alert-info">
+                <strong>Resultado de la Limpieza:</strong>
+                <p>{{ info|linebreaks }}</p> <!-- Convierte los saltos de línea en la cadena en etiquetas <br> -->
+            </div>
+        
         </div>
-        <div class="contenedor-der">   
-            <form action="{% url 'data_cleaning:opciones_limpieza' file_name=file_name %}" method="get">
-                <button type="submit" class="btn boton-primario">Limpiar datos</button>
-            </form>
-            <button type="submit" class="btn boton-primario">Transformar datos</button>
+    {% endif %}
 
-            <button type="submit" class="btn boton-primario">Analizar datos</button>
-
-            
-        </div>    
+    <div>
+        {% include "file_handler/_scrollable_table.html" %}    
     </div>
 
 {% endblock %}

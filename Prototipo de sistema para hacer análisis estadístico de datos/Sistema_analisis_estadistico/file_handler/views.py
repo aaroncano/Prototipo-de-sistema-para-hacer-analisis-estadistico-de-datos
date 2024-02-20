@@ -26,10 +26,14 @@ def revisar_csv(request, file_name):
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
         return error_response
+    
+    info = request.session.get('info', None) # Obtiene el mensaje de éxito o error
+    request.session['info'] = None  # Borra el mensaje de la sesión
 
     return render(request, 'file_handler/revisar_csv.html', {
         'dataframe': crear_inicio_tabla(df),
-        'file_name': file_name
+        'file_name': file_name,
+        'info': info
     })
 
 
@@ -62,6 +66,3 @@ def cambiar_version(request):
             return JsonResponse({'html': df_html})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
-def prueba_base(request):
-    return render(request, 'layouts/base.html')

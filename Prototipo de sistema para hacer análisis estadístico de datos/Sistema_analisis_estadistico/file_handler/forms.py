@@ -3,7 +3,10 @@ import os
 from django import forms
 
 class CargaCSVForm(forms.Form):
-    archivo_csv = forms.FileField(widget=forms.FileInput(attrs={'accept': '.csv'}), label='Sube tu dataset en formato CSV')
+    archivo_csv = forms.FileField(
+        widget=forms.FileInput(attrs={'accept': '.csv', 'class': 'form-control', 'id': 'formFile'}),
+        label=''
+    )
 
     def clean_archivo_csv(self):
         file = self.cleaned_data['archivo_csv']
