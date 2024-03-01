@@ -159,11 +159,15 @@
                 <div class="multi-level collapse {% if 'components-' in segment %} show {% endif %}" role="list"
                   id="submenu-components" aria-expanded="false">
                   <ul class="flex-column nav">
-                    <li class="nav-item {% if 'components-buttons' in segment %} active {% endif %}">
-                      <a class="nav-link" href="/components-buttons.html">
-                        <span class="sidebar-text">Descriptivo</span>
-                      </a>
-                    </li>
+
+                  
+                  <li class="nav-item {% if 'bootstrap-tables' in segment %} active {% endif %}">
+                    <a class="nav-link" href="{% url 'data_analysis:estadistica_descriptiva' file_name=file_name %}">
+                      <span class="sidebar-text">Descriptiva</span>
+                    </a>
+                  </li>
+                  
+                
                     <li class="nav-item {% if 'components-notifications' in segment %} active {% endif %}">
                       <a class="nav-link" href="/components-notifications.html">
                         <span class="sidebar-text">Inferencial</span>
@@ -185,14 +189,30 @@
               <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
               <li class="nav-item">
                 {% comment %} Cambiar URL para exportar datos {% endcomment %}
-                <form action="{% url 'file_handler:cargar_archivo'%}" method="get">
-                  <button type="submit" class="btn nav-link d-flex align-items-center">
-                    <span class="sidebar-icon">
-                      <i class="bi bi-box-arrow-up-right icon-xs me-2"></i>
-                    </span>
-                    <span class="sidebar-text">Exportar CSV</span>
-                  </button>
-                </form>
+                <button type="submit" id="exportar-csv-btn" class="btn nav-link d-flex align-items-center">
+                  <span class="sidebar-icon">
+                      <i class="bi bi-upload icon-xs me-2"></i>
+                  </span>
+                  Exportar CSV
+              </button>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#exportar-csv-btn').click(function() {
+        // Obtener el nombre del archivo CSV de algún lugar, por ejemplo, un atributo de datos en el botón
+        var file_name = $(this).data('CSV descargado');
+        
+        // Redireccionar al usuario a la vista de descarga del archivo CSV
+        window.location.href = '{% url "file_handler:descargar_csv" file_name=file_name %}';
+    });
+});
+</script>
+
+              
+                   
+            
+              
+              
               </li>
               {% comment %} <li class="nav-item">
                 <a target="_blank" 

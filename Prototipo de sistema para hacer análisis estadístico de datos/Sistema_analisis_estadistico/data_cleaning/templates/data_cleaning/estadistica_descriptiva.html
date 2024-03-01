@@ -1,0 +1,52 @@
+{% extends "data_cleaning/plantilla_opciones.html" %}
+
+{% block formulario %}
+
+<form action="{% url 'data_cleaning:estadistica_descriptiva' file_name=file_name %}" method="post">
+    {% csrf_token %}
+    <h5>Estadistica Descriptiva</h5>
+
+    <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
+
+        <div>
+            <p>Seleccione tipo de variable a analizar:</p>
+            <select class="form-select" id="alcance" name="alcance">
+                <option value="nombres_columnas">Tipo Variable</option>
+                <option value="columna_especifica">Numericas</option>
+                <option value="nombres_columnas">Categoricas</option>
+            </select>
+        </div>
+
+        <div id="group_columna_especifica" style="display: none;">
+            <p>Seleccione las variables:</p>
+            <div class="d-flex gap-3 flex-wrap mb-2">
+                {% for columna in columnas %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                        <label class="form-check-label" for="check_{{ columna }}">
+                            {{ columna }}
+                        </label>
+                    </div>
+                {% endfor %}    
+            </div>
+        </div>    
+
+    </div>
+
+
+
+    {{ block.super }}
+</form>
+
+<script>
+    document.getElementById('alcance').addEventListener('change', function() {
+        var group = document.getElementById('group_columna_especifica');
+        if(this.value === 'columna_especifica') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+</script>
+
+{% endblock %}

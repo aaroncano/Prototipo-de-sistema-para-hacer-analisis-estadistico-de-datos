@@ -1,7 +1,10 @@
+
+import csv
+from django.http import HttpResponse
+from http.client import HTTPResponse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import CargaCSVForm
-
 from utils.tablas_utils import crear_inicio_tabla
 from utils.csv_utils import leer_csv_o_error, handle_uploaded_file, ir_version_anterior, ir_version_siguiente
 
@@ -35,6 +38,32 @@ def revisar_csv(request, file_name):
         'file_name': file_name,
         'info': info
     })
+
+def descargar_archivo_csv(request, file_name):
+    # Leer el archivo CSV subido por el usuario
+    df, error_response, file_path = leer_csv_o_error(request, file_name)
+    
+    # Verificar si hubo un error al leer el archivo CSV
+    if error_response:
+        return error_response
+    
+    # Construir la respuesta HTTP para la descarga del archivo CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{file_name}"'  # Nombre del archivo
+    
+    # Escribir el contenido del archivo CSV en la respuesta HTTP
+    writer = csv.writer(response)
+    
+    # Escribir el encabezado (nombres de las columnas)
+    writer.writerow(df.columns)
+    
+    # Escribir los datos (filas)
+    for index, row in df.iterrows():
+        writer.writerow(row)
+    
+    return response
+
+
 
 
 ########################################################################################################

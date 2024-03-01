@@ -4,21 +4,21 @@
 
 <form action="{% url 'data_cleaning:normalizar_texto' file_name=file_name %}" method="post">
     {% csrf_token %}
-    <h5>Normalizar texto</h5>
+    <h5>Normalizar Texto</h5>
 
     <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
 
         <div>
-            <p>Seleccione el alcance de la normalización de texto:</p>
+            <p>Seleccione tipo de variable a analizar:</p>
             <select class="form-select" id="alcance" name="alcance">
-                <option value="nombres_columnas">Nombres de Columnas</option>
-                <option value="columna_especifica">Elegir columnas</option>
+                <option value="nombres_columnas">Variable</option>
+                <option value="columna_especifica">Elegir variable</option>
                 <option value="todo">Todo el dataset</option>
             </select>
         </div>
 
         <div id="group_columna_especifica" style="display: none;">
-            <p>Seleccione las columnas a normalizar:</p>
+            <p>Seleccione las variables:</p>
             <div class="d-flex gap-3 flex-wrap mb-2">
                 {% for columna in columnas %}
                     <div class="form-check mb-2">

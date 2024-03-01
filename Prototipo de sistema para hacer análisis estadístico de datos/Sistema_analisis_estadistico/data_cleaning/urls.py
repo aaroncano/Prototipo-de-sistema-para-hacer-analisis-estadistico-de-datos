@@ -10,5 +10,7 @@ urlpatterns = [
     path('normalizar_texto/<str:file_name>', views.normalizar_texto, name='normalizar_texto'),
     path('manejar_valores_vacios/<str:file_name>', views.manejar_valores_vacios, name='manejar_valores_vacios'),
     path('procesar_outliers/<str:file_name>', views.procesar_outliers, name='procesar_outliers'),
-    path('filtrar:datos/<str:file_name>', views.filtrar_datos, name='filtrar_datos')
+    path('filtrar:datos/<str:file_name>', views.filtrar_datos, name='filtrar_datos'),
+    path('estadistica_descriptiva/<str:file_name>', views.estadistica_descriptiva, name='estadistica_descriptiva'),
+    
 ]

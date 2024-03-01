@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('file_handler/', include('file_handler.urls')),
     path('data_cleaning/', include('data_cleaning.urls')),
+    path('data_analysis/', include ('data_analysis.urls'))
 ]
 
 if settings.DEBUG:
