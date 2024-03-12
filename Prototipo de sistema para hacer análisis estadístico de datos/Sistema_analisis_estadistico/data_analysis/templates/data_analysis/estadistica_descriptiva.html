@@ -1,24 +1,24 @@
-{% extends "data_analysis/plantilla_analisis.html" %}
+{% extends "data_cleaning/plantilla_opciones.html" %}
 
 {% block formulario %}
 
 <form action="{% url 'data_analysis:estadistica_descriptiva' file_name=file_name %}" method="post">
     {% csrf_token %}
-    <h5>Estadistica Descriptiva2.0</h5>
+    <h5>Estadística Descriptiva</h5>
 
     <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
-
         <div>
-            <p>Seleccione tipo de variable a analizar:</p>
+            <p>Seleccione tipo de análisis a realizar:</p>
             <select class="form-select" id="alcance" name="alcance">
-                <option value="nombres_columnas">Tipo Variable</option>
-                <option value="columna_especifica">Numericas</option>
-                <option value="nombres_columnas">Categoricas</option>
+                <option value="nombres_columnas">Tipo análisis</option>
+                <option value="columna_especifica">Distribución de frecuencias</option>
+                <option value="tendencia_central">Tendencia central</option>
+                <option value="variabilidad">Variabilidad</option> <!-- Nueva opción -->
             </select>
         </div>
 
         <div id="group_columna_especifica" style="display: none;">
-            <p>Seleccione las variables:</p>
+            <p>Seleccione las variables categoricas:</p>
             <div class="d-flex gap-3 flex-wrap mb-2">
                 {% for columna in columnas %}
                     <div class="form-check mb-2">
@@ -29,22 +29,92 @@
                     </div>
                 {% endfor %}    
             </div>
+        </div>
+
+        <div id="group_tendencia_central" style="display: none;"> <!-- Nuevo grupo para las columnas numéricas -->
+            <p>Seleccione las variables numéricas:</p>
+            <div class="d-flex gap-3 flex-wrap mb-2">
+                {% for columna in columnas_numericas %} <!-- Iterar sobre las columnas numéricas -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                        <label class="form-check-label" for="check_{{ columna }}">
+                            {{ columna }}
+                        </label>
+                    </div>
+                {% endfor %}    
+            </div>
         </div>    
 
+        <div id="variabilidad" style="display: none;"> <!-- Nuevo grupo para las columnas numéricas -->
+            <p>Seleccione las variables numéricas:</p>
+            <div class="d-flex gap-3 flex-wrap mb-2">
+                {% for columna in columnas_numericas %} <!-- Iterar sobre las columnas numéricas -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                        <label class="form-check-label" for="check_{{ columna }}">
+                            {{ columna }}
+                        </label>
+                    </div>
+                {% endfor %}    
+            </div>
+        </div>    
     </div>
 
-
-
-    {{ block.super }}
+    <button type="submit" class="btn btn-primary">Realizar Análisis</button>
 </form>
+
+{% if imagenes_histograma %}
+    <div class="mt-4">
+        <h5>Resultados de Distribución de Frecuencias:</h5>
+        {% for columna, imagen_base64 in imagenes_histograma.items %}
+            <h6>{{ columna }}</h6>
+            <img src="data:image/png;base64,{{ imagen_base64 }}" alt="Histograma de {{ columna }}">
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if resultados_html %}
+    <div class="mt-4">
+        <h5>Resultados de la Análisis:</h5>
+        {{ resultados_html|safe }}
+    </div>
+{% endif %}
+
+{% if imagenes_tendencia_central %}
+    <div class="mt-4">
+        <h5>Resultados de Tendencia Central:</h5>
+        {% for columna, imagen_base64 in imagenes_tendencia_central.items %}
+            <h6>{{ columna }}</h6>
+            <img src="data:image/png;base64,{{ imagen_base64 }}" alt="Gráfico de Tendencia Central de {{ columna }}">
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if resultados_variabilidad_html %}
+<div class="container">
+    <h2>Resultados de Variabilidad</h2>
+    {{ resultados_variabilidad_html|safe }}
+</div>
+{% endif %}
+
+<!-- {{ block.super }} -->
 
 <script>
     document.getElementById('alcance').addEventListener('change', function() {
         var group = document.getElementById('group_columna_especifica');
+        var groupTendenciaCentral = document.getElementById('group_tendencia_central');
+        var groupVariabilidad = document.getElementById('variabilidad');
+
+        group.style.display = 'none';
+        groupTendenciaCentral.style.display = 'none';
+        groupVariabilidad.style.display = 'none';
+
         if(this.value === 'columna_especifica') {
             group.style.display = 'block';
-        } else {
-            group.style.display = 'none';
+        } else if (this.value === 'tendencia_central') {
+            groupTendenciaCentral.style.display = 'block';
+        } else if (this.value === 'variabilidad') { // Mostrar el grupo de variabilidad si se selecciona esa opción
+            groupVariabilidad.style.display = 'block';
         }
     });
 </script>
