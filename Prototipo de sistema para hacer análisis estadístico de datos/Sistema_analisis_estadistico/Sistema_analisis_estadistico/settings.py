@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'file_handler',
     'data_cleaning',
     'data_analysis',
+    'report',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

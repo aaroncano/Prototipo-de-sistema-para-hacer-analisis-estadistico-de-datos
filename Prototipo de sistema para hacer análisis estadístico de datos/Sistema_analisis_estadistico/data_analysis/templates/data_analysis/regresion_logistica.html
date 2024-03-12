@@ -1,0 +1,46 @@
+{% extends "data_analysis/plantilla_analisis.html" %}
+
+{% block title %}Regresión Logística{% endblock %}
+
+{% block formulario %}
+<form action="{% url 'data_analysis:regresion_logistica' file_name=file_name %}" method="post">
+    {% csrf_token %}
+    <h5>Regresión Logística</h5>
+
+    <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
+        
+        <div>
+            <p>Selecciona la variable dependiente (Y)</p>
+            <select class="form-select" id="variable_dependiente" name="variable_dependiente">
+                <!-- Suponemos que columnas_binarias es pasado al template y contiene solo columnas binarias -->
+                {% for columna in columnas_binarias %}
+                <option value="{{ columna }}">{{ columna }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <p>Selecciona las variables independientes (X)</p>
+            <!-- Suponemos que columnas_numericas es pasado al template y contiene solo columnas numéricas -->
+            <div class="d-flex gap-3 flex-wrap mb-2">
+                {% for columna in columnas_numericas %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="variables_independientes" value="{{ columna }}" id="check_{{ columna }}">
+                    <label class="form-check-label" for="check_{{ columna }}">
+                        {{ columna }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Agregar campo para el umbral de clasificación -->
+        <div>
+            <p>Umbral de clasificación:</p>
+            <input type="number" class="form-control" id="umbral" name="umbral" value="0.5" step="0.01" min="0" max="1">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Analizar</button>
+</form>
+{% endblock %}

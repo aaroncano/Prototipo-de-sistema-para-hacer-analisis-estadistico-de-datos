@@ -1,0 +1,88 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Reporte de Análisis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ reporte.titulo }}</h2>
+    <p>{{ reporte.descripcion }}</p>
+
+    <!-- Estadísticas Básicas -->
+    <h3>Estadísticas Básicas</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Estadística</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat, value in reporte.resultados.estadisticas.items %}
+            <tr>
+                <td>{{ stat }}</td>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Coeficientes del Modelo -->
+    <h3>Coeficientes del Modelo</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Coeficiente</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for variable, coef in reporte.resultados.coeficientes.items %}
+            <tr>
+                <td>{{ variable }}</td>
+                <td>{{ coef }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Gráfico de Regresión Lineal -->
+    {% if reporte.resultados.graficos %}
+        {% for grafico in reporte.resultados.graficos %}
+            <h3>{{ grafico.titulo }}</h3>
+            <canvas id="grafico{{ forloop.counter }}"></canvas>
+            <script>
+                var ctx = document.getElementById('grafico{{ forloop.counter }}').getContext('2d');
+                var mixedChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Puntos Observados',
+                                data: {{ grafico.datos.puntos_observados|safe }},
+                                backgroundColor: 'rgba(0, 99, 132, 0.6)',
+                                showLine: false,
+                            },
+                            {
+                                label: 'Línea de Ajuste',
+                                data: {{ grafico.datos.puntos_linea_ajuste|safe }},
+                                type: 'line',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                fill: false,
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'linear',
+                                position: 'bottom'
+                            }]
+                        }
+                    }
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
