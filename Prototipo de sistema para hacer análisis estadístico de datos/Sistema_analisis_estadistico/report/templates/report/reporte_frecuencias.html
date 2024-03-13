@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+{% block title %}Reporte de Distribución de Frecuencias{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reporte de Distribución de Frecuencias</h2>
+
+    <!-- Mostrar los resultados de la distribución de frecuencias -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Frecuencia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna, frecuencias in resultados_distribucion_frecuencias.items %}
+            <tr>
+                <td>{{ columna }}</td>
+                <td>
+                    {% for etiqueta, frecuencia in frecuencias.items %}
+                        {{ etiqueta }}: {{ frecuencia }}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Mostrar el gráfico -->
+    <div>
+        <h3>Gráfico de Distribución de Frecuencias</h3>
+        <canvas id="grafico_frecuencias"></canvas>
+    </div>
+</div>
+
+<!-- Script para inicializar Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Obtener los valores de frecuencia
+    var etiquetas = [];
+    var valores = [];
+
+    // Recorrer el diccionario resultados_distribucion_frecuencias
+    {% for columna, frecuencias in resultados_distribucion_frecuencias.items %}
+        // Agregar cada etiqueta y su respectiva frecuencia
+        {% for etiqueta, frecuencia in frecuencias.items %}
+            etiquetas.push("{{ etiqueta }}");
+            valores.push({{ frecuencia }});
+        {% endfor %}
+    {% endfor %}
+
+    var ctx = document.getElementById('grafico_frecuencias').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: etiquetas,
+            datasets: [{
+                label: 'Frecuencia',
+                data: valores,
+                backgroundColor: 'rgba(7, 73, 97, 0.8)', // 
+                borderColor: 'rgba(5, 137, 97, 0.8)', //
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock %}
+

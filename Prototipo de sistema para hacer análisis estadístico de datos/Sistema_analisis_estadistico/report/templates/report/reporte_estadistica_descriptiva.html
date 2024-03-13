@@ -1,0 +1,78 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Reporte de Estadística Descriptiva{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reporte de Estadística Descriptiva</h2>
+
+    <!-- Resultados de Tendencia Central -->
+    <h3>Resultados de Tendencia Central</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Media</th>
+                <th>Moda</th>
+                <th>Mediana</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna, datos in resultados_tendencia_central.items %}
+            <tr>
+                <td>{{ columna }}</td>
+                <td>{{ datos.media }}</td>
+                <td>{{ datos.moda }}</td>
+                <td>{{ datos.mediana }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Resultados de Variabilidad -->
+    <h3>Resultados de Variabilidad</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Varianza</th>
+                <th>Desviación Estándar</th>
+                <th>Rango</th>
+                <th>Coeficiente de Variación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna, datos in resultados_variabilidad.items %}
+            <tr>
+                <td>{{ columna }}</td>
+                <td>{{ datos.varianza }}</td>
+                <td>{{ datos.desviacion_estandar }}</td>
+                <td>{{ datos.rango }}</td>
+                <td>{{ datos.coeficiente_variacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Resultados de Distribución de Frecuencias -->
+    <h3>Resultados de Distribución de Frecuencias</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Frecuencia</th>
+                <!-- Agrega más columnas si es necesario -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna, frecuencia in resultados_distribucion_frecuencias.items %}
+            <tr>
+                <td>{{ columna }}</td>
+                <td>{{ frecuencia }}</td>
+                <!-- Agrega más celdas si es necesario -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

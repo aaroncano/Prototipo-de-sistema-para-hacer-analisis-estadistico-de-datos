@@ -1,0 +1,101 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Reporte de Variabilidad{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reporte de Variabilidad</h2>
+
+    <!-- Tabla para mostrar los resultados -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Varianza</th>
+                <th>Desviación Estándar</th>
+                <th>Rango</th>
+                <th>Coeficiente de Variación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna, datos in resultados_variabilidad.items %}
+            <tr>
+
+                <td>{{ columna }}</td>
+                <td>{{ datos.Varianza }}</td>
+                <td>{{ datos.Desviacion_Estandar }}</td>
+                <td>{{ datos.Rango }}</td>
+                <td>{{ datos.Coeficiente_de_Variacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Gráficos de Variabilidad -->
+    <div>
+        <h3>Gráfico de Variabilidad</h3>
+        <canvas id="grafico_variabilidad"></canvas>
+    </div>
+</div>
+
+<!-- Script para inicializar Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var labels = [];
+    var varianzas = [];
+    var desviaciones = [];
+    var rangos = [];
+    var coeficientes = [];
+
+    {% for columna, datos in resultados_variabilidad.items %}
+        labels.push("{{ columna }}");
+        varianzas.push({{ datos.Varianza }});
+        desviaciones.push({{ datos.Desviacion_Estandar }});
+        rangos.push({{ datos.Rango }});
+        coeficientes.push({{ datos.Coeficiente_de_Variacion }});
+    {% endfor %}
+
+    var ctx = document.getElementById('grafico_variabilidad').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Varianza',
+                    data: varianzas,
+                    backgroundColor: 'rgba(7, 73, 97, 0.2)',
+                borderColor: 'rgba(7, 73, 97, 0.8)',
+                },
+                {
+                    label: 'Desviacion_Estandar',
+                    data: desviaciones,
+                    backgroundColor: 'rgba(7, 73, 97, 0.4)',
+                    borderColor: 'rgba(7, 73, 97, 0.8)',
+                },
+                {
+                    label: 'Rango',
+                    data: rangos,
+                    backgroundColor: 'rgba(7, 73, 97, 0.6)',
+                    borderColor: 'rgba(7, 73, 97, 0.8)',
+                },
+                {
+                    label: 'Coeficiente_de_Variacion',
+                    data: coeficientes,
+              backgroundColor: 'rgba(7, 73, 97, 1)',
+                borderColor: 'rgba(7, 73, 97, 0.8)',
+                }
+            ]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock %}
