@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('file_handler/', include('file_handler.urls')),
     path('data_cleaning/', include('data_cleaning.urls')),
+    path('data_transformation/', include('data_transformation.urls')),
     path('data_analysis/', include ('data_analysis.urls')),
     path('report/', include('report.urls'))
 ]

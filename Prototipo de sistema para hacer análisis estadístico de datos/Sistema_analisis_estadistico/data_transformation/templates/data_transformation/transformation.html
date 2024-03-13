@@ -1,0 +1,65 @@
+{% extends "data_transformation/plantilla_opciones.html" %}
+
+{% block formulario %}
+
+<form action="{% url 'data_transformation:transformation' file_name=file_name %}" method="post">
+    {% csrf_token %}
+    <h5>Tranformación de variables categorias</h5>
+
+    <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
+
+        <div>
+            <p>Seleccione las columnas: </p>
+            <select class="form-select" id="alcance" name="alcance">
+                <option value="nombres_columnas">Nombre de columnas</option>
+                <option value="columna_especifica">Elegir columnas</option>
+                <option value="todo">Todo el dataset</option>
+            </select>
+        </div> 
+
+        <div>
+            <p>Seleccione el tipo de transformación</p>
+            <select class="form-select" id="tipo" name="tipo">
+                <option value="nombres_transformacion">Nombres de tranformacion</option>
+                <option value="labelencoder">Codificador de etiquetas</option>
+                <option value="one_hot">One-hot</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div id="group_columna_especifica" style="display: none;">
+        <p>Seleccione las columnas a tranformar:</p>
+        <div class="d-flex gap-3 flex-wrap mb-2">
+            {% for columna in columnas %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                    <label class="form-check-label" for="check_{{ columna }}">
+                        {{ columna }}
+                    </label>
+                </div>
+            {% endfor %}    
+        </div>
+    </div> 
+
+    {{ block.super }}
+</form>
+
+
+<script>
+    document.getElementById('alcance').addEventListener('change', function() {
+        var group = document.getElementById('group_columna_especifica');
+        if(this.value === 'columna_especifica') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('tipo').addEventListener('change', function() {
+        // Tu código aquí para manejar el cambio en el elemento <select> con el id "tipo"
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "data_transformation/plantilla_opciones.html" %}
+
+{% block formulario %}
+
+<form action="{% url 'data_transformation:standardization' file_name=file_name %}" method="post">
+    {% csrf_token %}
+    <h5>Estandarizar columnas</h5>
+
+    <div class="d-flex gap-4 justify-content-start flex-wrap mt-2 mb-4">
+
+        <div>
+            <p>Seleccione las columnas:</p>
+            <select class="form-select" id="alcance" name="alcance">
+                <option value="nombres_columnas">Nombres de Columnas</option>
+                <option value="columna_especifica">Elegir columnas</option>
+                <option value="todo">Todo el dataset</option>
+            </select>
+        </div>
+
+        <div>
+            <p>Seleccione el tipo de estandarización</p>
+            <select class="form-select" id="tipo" name="tipo">
+                <option value="standardization">Tipos de estandarización</option>
+                <option value="maxmin">MaxMin</option>
+                <option value="normalizar">Normalizar</option>
+                <option value="estandar">Estandar</option>
+            </select>
+        </div>
+
+    </div>
+
+
+    <div id="group_columna_especifica" style="display: none;">
+        <p>Seleccione las columnas a estandarizar:</p>
+        <div class="d-flex gap-3 flex-wrap mb-2">
+            {% for columna in columnas %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="columnas_a_manipular" value="{{ columna }}" id="check_{{ columna }}">
+                    <label class="form-check-label" for="check_{{ columna }}">
+                          {{ columna }}
+                    </label>
+                </div>
+            {% endfor %}    
+        </div>
+    </div>    
+
+    {{ block.super }}
+</form>
+
+<script>
+    document.getElementById('alcance').addEventListener('change', function() {
+        var group = document.getElementById('group_columna_especifica');
+        if(this.value === 'columna_especifica') {
+            group.style.display = 'block';
+        } else {
+            group.style.display = 'none';
+        }
+    });
+</script>
+
+{% endblock %}

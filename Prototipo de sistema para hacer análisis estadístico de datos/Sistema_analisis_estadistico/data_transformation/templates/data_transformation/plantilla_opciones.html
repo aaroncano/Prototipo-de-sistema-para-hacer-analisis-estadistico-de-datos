@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Transformación{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column gap-2">
+    <div class="bg-white rounded shadow p-4 mt-4 flex-shrink-1">
+        {% block formulario%}
+        
+        <div>
+            <button type="submit" class="btn btn-primary">Aplicar transformación</button>
+        </div>
+
+        {% endblock %}	
+    </div>
+
+    <div class="flex-fill">
+        {% include "file_handler/_scrollable_table.html" %}
+    </div>
+
+</div>
+{% endblock %}

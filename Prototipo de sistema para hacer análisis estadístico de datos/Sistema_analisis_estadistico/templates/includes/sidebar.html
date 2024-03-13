@@ -130,12 +130,12 @@
                   id="submenu-pages" aria-expanded="false">
                   <ul class="flex-column nav">
                     <li class="nav-item">
-                      <a class="nav-link" href="/page-sign-in.html">
+                      <a class="nav-link"  href="{% url 'data_transformation:transformation' file_name=file_name %}">
                         <span class="sidebar-text">Variables Categóricas</span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="/page-sign-in.html">
+                      <a class="nav-link" href="{% url 'data_transformation:standardization' file_name=file_name %}">
                         <span class="sidebar-text">Estandarización</span>
                       </a>
                     </li>
