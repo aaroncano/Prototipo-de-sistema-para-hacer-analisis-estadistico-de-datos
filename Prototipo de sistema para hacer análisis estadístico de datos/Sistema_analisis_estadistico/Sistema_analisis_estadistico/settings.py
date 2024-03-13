@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'file_handler',
     'data_cleaning',
+    'data_transformation',
     'data_analysis',
     'report',
 ]
