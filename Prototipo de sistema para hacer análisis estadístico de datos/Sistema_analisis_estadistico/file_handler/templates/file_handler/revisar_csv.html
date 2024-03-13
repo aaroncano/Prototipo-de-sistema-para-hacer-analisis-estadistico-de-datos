@@ -5,12 +5,19 @@
 {% block content %}
     {% if info %}
         <div class="mt-4">
-        
-            <div class="alert alert-info">
-                <strong>Resultado de la Limpieza:</strong>
-                <p>{{ info|linebreaks }}</p> <!-- Convierte los saltos de línea en la cadena en etiquetas <br> -->
-            </div>
-        
+            {% if 'Error' in info %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Algo salió mal</strong>
+                    <p>{{ info|linebreaks }}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% else %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Resultados:</strong>
+                    <p>{{ info|linebreaks }}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 

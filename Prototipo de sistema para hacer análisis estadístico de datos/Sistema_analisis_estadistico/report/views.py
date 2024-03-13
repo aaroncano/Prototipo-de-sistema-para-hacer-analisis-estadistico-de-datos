@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 import json
+
+from data_analysis.utils.data_analysis_utils import guardar_resultado_en_sesion
 
 def reporte_regresion_linear(request, file_name):
     # Asumiendo que los datos del reporte se almacenan en la sesión como JSON
@@ -56,6 +58,9 @@ def reporte_estadistica_descriptiva(request, file_name):
             'resultados_distribucion_frecuencias': resultados_distribucion_frecuencias
         })
     else:
-        # En caso de que no se haya realizado ningún análisis o haya ocurrido un error
-        return render(request, 'report/error.html')
+        resultado = {
+            'Errores': ['No se encontraron resultados para mostrar. Revise que se hayan seleccionado columnas para el análisis y tipo de análisis.']
+        }
+        guardar_resultado_en_sesion(request, resultado)
+        return redirect('file_handler:revisar_csv', file_name=file_name)
 

@@ -3,25 +3,21 @@ from django.shortcuts import render
 from http.client import HTTPResponse
 from django.shortcuts import redirect
 import pandas as pd
-from data_cleaning.utils import cleaning_utils
-from data_cleaning.utils.views_utils import guardar_resultado_en_sesion, preparar_datos_para_get
+from .utils.data_analysis_utils import guardar_resultado_en_sesion, preparar_datos_para_get
 from utils.csv_utils import gestionar_version_archivo, leer_csv_o_error, guardar_csv
 from utils.tablas_utils import crear_inicio_tabla
-
+import numpy as np
 from .utils import inferencial_utils
 
-import matplotlib
-matplotlib.use('Agg')
-
-import matplotlib.pyplot as plt
-import io
-import base64
-import numpy as np
 
 
 from django.shortcuts import redirect
 
 def estadistica_descriptiva(request, file_name):
+    resultado = {
+        'Errores': []
+    }
+
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
@@ -105,11 +101,13 @@ def regresion_lineal(request, file_name):
         variables_independientes = request.POST.getlist('variables_independientes')
         
         new_file_name, new_file_path = gestionar_version_archivo(request, file_name)
-        df_procesado, reporte_data = inferencial_utils.regresion_linear(df, variable_dependiente, variables_independientes)
+        df_procesado, reporte_data, resultado = inferencial_utils.regresion_linear(df, variable_dependiente, variables_independientes)
         
-        request.session['reporte_data'] = json.dumps(reporte_data)
+        if(resultado['Errores']):
+            guardar_resultado_en_sesion(request, resultado)
+            return redirect('file_handler:revisar_csv', file_name=new_file_name)
 
-        #guardar_resultado_en_sesion(request, resultado)
+        request.session['reporte_data'] = json.dumps(reporte_data)
 
         guardar_csv(df_procesado, new_file_path)
         return redirect('report:reporte_regresion_linear', file_name=new_file_name)
@@ -154,8 +152,12 @@ def regresion_logistica(request, file_name):
         umbral = float(request.POST.get('umbral', 0.5))
         
         new_file_name, new_file_path = gestionar_version_archivo(request, file_name)
-        df_procesado, reporte_data = inferencial_utils.regresion_logistica(df, variable_dependiente, variables_independientes, umbral)
+        df_procesado, reporte_data, resultado = inferencial_utils.regresion_logistica(df, variable_dependiente, variables_independientes, umbral)
         
+        if(resultado['Errores']):
+            guardar_resultado_en_sesion(request, resultado)
+            return redirect('file_handler:revisar_csv', file_name=new_file_name)
+
         request.session['reporte_data'] = json.dumps(reporte_data)
 
         guardar_csv(df_procesado, new_file_path)
