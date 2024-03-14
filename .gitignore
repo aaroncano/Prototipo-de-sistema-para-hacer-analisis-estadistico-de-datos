@@ -1,3 +1,5 @@
-"*.pyc" 
-"db.sqlite3" 
-"__pycache__/" 
+*.pyc 
+db.sqlite3 
+__pycache__/
+Prototipo de sistema para hacer análisis estadístico de datos/Sistema_analisis_estadistico/temp_files/
+ 

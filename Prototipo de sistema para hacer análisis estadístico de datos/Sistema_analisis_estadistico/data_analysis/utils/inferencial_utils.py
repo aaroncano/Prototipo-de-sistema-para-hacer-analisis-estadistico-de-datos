@@ -17,6 +17,9 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
         X = df[variables_independientes]
         y = df[variable_dependiente]
 
+        # Obtener las primeras 10 filas para las columnas especificadas
+        primeras_filas = df[variables_independientes + [variable_dependiente]].head(10)
+
         # Dividir los datos en conjunto de entrenamiento y prueba
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -54,7 +57,7 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
 
             # Preparar puntos observados
             puntos_observados = [{"x": float(X_var[i][0]), "y": float(y_test.iloc[i])} for i in range(len(X_var))]
-
+            
             # Agregar al gráfico
             graficos.append({
                 "tipo_grafico": "scatter_linea",
@@ -64,10 +67,10 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
                     "puntos_linea_ajuste": puntos_linea_ajuste,
                 }
             })
-
+        
         # Preparar el resultado para devolver
         reporte_data = {
-            "titulo": "Resultados de Regresión Lineal",
+            "titulo": "Reporte - Regresión Lineal",
             "descripcion": f"Análisis de regresión lineal para '{variable_dependiente}' con variables independientes {', '.join(variables_independientes)}.",
             "tipo_analisis": "regresion_lineal",
             "resultados": {
@@ -77,6 +80,8 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
                 },
                 "coeficientes": dict(zip(variables_independientes, modelo.coef_)),
                 "intercepto": modelo.intercept_,
+                "nombres_columnas": variables_independientes + [variable_dependiente], 
+                "primeras_filas": primeras_filas.to_dict('records'), 
                 "graficos": graficos
             }
         }
@@ -96,6 +101,9 @@ def regresion_logistica(df, variable_dependiente, variables_independientes, umbr
         X = df[variables_independientes]
         y = label_binarize(df[variable_dependiente].values, classes=[0, 1])[:, 0]
 
+        # Obtener las primeras 10 filas para las columnas especificadas
+        primeras_filas = df[variables_independientes + [variable_dependiente]].head(10)
+       
         # Dividir los datos en conjunto de entrenamiento y prueba
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -135,7 +143,7 @@ def regresion_logistica(df, variable_dependiente, variables_independientes, umbr
 
         # Generar el reporte de datos
         reporte_data = {
-            "titulo": "Resultados de Regresión Logística",
+            "titulo": "Reporte - Regresión Logística",
             "descripcion": f"Análisis de regresión logística para '{variable_dependiente}' con variables independientes {', '.join(variables_independientes)} y umbral de {umbral}.",
             "tipo_analisis": "regresion_logistica",
             "resultados": {
@@ -147,6 +155,8 @@ def regresion_logistica(df, variable_dependiente, variables_independientes, umbr
                 "auc": roc_auc,
                 "coeficientes": dict(zip(variables_independientes, modelo.coef_.flatten())),
                 "intercepto": modelo.intercept_[0],
+                "nombres_columnas": variables_independientes + [variable_dependiente], 
+                "primeras_filas": primeras_filas.to_dict('records'), 
                 "graficos": [
                     {
                         "tipo_grafico": "curva_roc",

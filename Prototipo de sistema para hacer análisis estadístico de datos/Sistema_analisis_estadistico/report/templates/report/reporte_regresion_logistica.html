@@ -3,216 +3,255 @@
 {% block title %}Reporte de Análisis{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>{{ reporte.titulo }}</h2>
-    <p>{{ reporte.descripcion }}</p>
+<div class="bg-white rounded shadow p-4 mt-4 flex-shrink-1">
+    <div class="mb-5">
+        <h3>{{ reporte.titulo }}</h3>
+        <p>{{ reporte.descripcion }}</p>    
+    </div>
+
+    <!-- Primeras Filas Analizadas -->
+    <div class="container mt-5 mb-5">
+        <h4>Muestra de datos analizados</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for columna in reporte.resultados.nombres_columnas %}
+                        <th>{{ columna }}</th>
+                    {% endfor %}
+                </tr>
+            </thead> 
+            <tbody>
+                {% for fila in reporte.resultados.primeras_filas %}
+                    <tr>
+                        {% for valor in fila.values %}
+                            <td>{{ valor }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
+
 
     <!-- Matriz de Confusión -->
-    <h3>Matriz de Confusión</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Predicho: No</th>
-                <th>Predicho: Sí</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>Real: No</th>
-                <!-- Acceso directo a los elementos de la matriz sin usar índices -->
-                <td>{{ reporte.resultados.matriz_confusion.0.0 }}</td>
-                <td>{{ reporte.resultados.matriz_confusion.0.1 }}</td>
-            </tr>
-            <tr>
-                <th>Real: Sí</th>
-                <td>{{ reporte.resultados.matriz_confusion.1.0 }}</td>
-                <td>{{ reporte.resultados.matriz_confusion.1.1 }}</td>
-            </tr>
-        </tbody>        
-    </table>
+    <div class="container mt-5 mb-5">
+        <h4>Matriz de Confusión</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Predicho: No</th>
+                    <th>Predicho: Sí</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Real: No</th>
+                    <!-- Acceso directo a los elementos de la matriz sin usar índices -->
+                    <td>{{ reporte.resultados.matriz_confusion.0.0 }}</td>
+                    <td>{{ reporte.resultados.matriz_confusion.0.1 }}</td>
+                </tr>
+                <tr>
+                    <th>Real: Sí</th>
+                    <td>{{ reporte.resultados.matriz_confusion.1.0 }}</td>
+                    <td>{{ reporte.resultados.matriz_confusion.1.1 }}</td>
+                </tr>
+            </tbody>        
+        </table>
+    </div>
 
     <!-- Métricas de Rendimiento -->
-    <h3>Métricas de Rendimiento</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Métrica</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Precisión</td>
-                <td>{{ reporte.resultados.precision }}</td>
-            </tr>
-            <tr>
-                <td>Recall</td>
-                <td>{{ reporte.resultados.recall }}</td>
-            </tr>
-            <tr>
-                <td>F1-Score</td>
-                <td>{{ reporte.resultados.f1_score }}</td>
-            </tr>
-            <tr>
-                <td>AUC</td>
-                <td>{{ reporte.resultados.auc }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container mt-5 mb-5">
+        <h4>Métricas de Rendimiento</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Precisión</td>
+                    <td>{{ reporte.resultados.precision }}</td>
+                </tr>
+                <tr>
+                    <td>Recall</td>
+                    <td>{{ reporte.resultados.recall }}</td>
+                </tr>
+                <tr>
+                    <td>F1-Score</td>
+                    <td>{{ reporte.resultados.f1_score }}</td>
+                </tr>
+                <tr>
+                    <td>AUC</td>
+                    <td>{{ reporte.resultados.auc }}</td>
+                </tr>
+            </tbody>
+        </table>        
+    </div>
+
 
     <!-- Coeficientes del Modelo -->
-    <h3>Coeficientes del Modelo</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Variable</th>
-                <th>Coeficiente</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for variable, coef in reporte.resultados.coeficientes.items %}
-            <tr>
-                <td>{{ variable }}</td>
-                <td>{{ coef }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td>Intercepto</td>
-                <td>{{ reporte.resultados.intercepto }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container mt-5 mb-5">
+        <h4>Coeficientes del Modelo</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Coeficiente</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for variable, coef in reporte.resultados.coeficientes.items %}
+                <tr>
+                    <td>{{ variable }}</td>
+                    <td>{{ coef }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>Intercepto</td>
+                    <td>{{ reporte.resultados.intercepto }}</td>
+                </tr>
+            </tbody>
+        </table>        
+    </div>
+
 
     <!-- Gráfico de la Curva ROC -->
     {% if reporte.resultados.graficos %}
         {% for grafico in reporte.resultados.graficos %}
             {% if grafico.tipo_grafico == "curva_roc" %}
-                <h3>{{ grafico.titulo }}</h3>
-                <canvas id="graficoROC{{ forloop.counter }}"></canvas>
-                <script>
-                    var ctx = document.getElementById('graficoROC{{ forloop.counter }}').getContext('2d');
-                    var dataPuntosROC = {{ grafico.datos.puntos_curva_roc|safe }};
-                    var roc_auc = {{ grafico.datos.roc_auc|safe }};
+                <div class="container mt-5 mb-5">
+                    <h4>{{ grafico.titulo }}</h4>
+                    <canvas id="graficoROC{{ forloop.counter }}"></canvas>
+                    <script>
+                        var ctx = document.getElementById('graficoROC{{ forloop.counter }}').getContext('2d');
+                        var dataPuntosROC = {{ grafico.datos.puntos_curva_roc|safe }};
+                        var roc_auc = {{ grafico.datos.roc_auc|safe }};
+                        
+                        var rocData = {
+                            labels: dataPuntosROC.map(p => p.fpr),
+                            datasets: [{
+                                label: 'Curva ROC',
+                                data: dataPuntosROC.map(p => p.tpr),
+                                backgroundColor: 'transparent',
+                                borderColor: 'rgb(255, 99, 132)',
+                                borderWidth: 2,
+                                pointBackgroundColor: 'rgb(255, 99, 132)',
+                                fill: false,
+                                tension: 0 // Deshabilita la curvatura de la línea
+                            }]
+                        };
                     
-                    var rocData = {
-                        labels: dataPuntosROC.map(p => p.fpr),
-                        datasets: [{
-                            label: 'Curva ROC',
-                            data: dataPuntosROC.map(p => p.tpr),
-                            backgroundColor: 'transparent',
-                            borderColor: 'rgb(255, 99, 132)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgb(255, 99, 132)',
-                            fill: false,
-                            tension: 0 // Deshabilita la curvatura de la línea
-                        }]
-                    };
-                
-                    var rocOptions = {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'AUC: ' + roc_auc
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false
-                            },
-                            hover: {
-                                mode: 'nearest',
-                                intersect: true
-                            }
-                        },
-                        scales: {
-                            x: {
+                        var rocOptions = {
+                            responsive: true,
+                            plugins: {
                                 title: {
                                     display: true,
-                                    text: 'False Positive Rate'
+                                    text: 'AUC: ' + roc_auc
                                 },
-                                beginAtZero: true
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                hover: {
+                                    mode: 'nearest',
+                                    intersect: true
+                                }
                             },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'True Positive Rate'
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'False Positive Rate'
+                                    },
+                                    beginAtZero: true
                                 },
-                                beginAtZero: true
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'True Positive Rate'
+                                    },
+                                    beginAtZero: true
+                                }
                             }
-                        }
-                    };
-                
-                    var rocChart = new Chart(ctx, {
-                        type: 'line',
-                        data: rocData,
-                        options: rocOptions
-                    });
-                </script>                                       
+                        };
+                    
+                        var rocChart = new Chart(ctx, {
+                            type: 'line',
+                            data: rocData,
+                            options: rocOptions
+                        });
+                    </script>             
+                </div>                                     
             {% endif %}
+
             {% if grafico.tipo_grafico == "dispersion" %}
-            <h3>{{ grafico.titulo }}</h3>
-            <canvas id="graficoDispersion{{ forloop.counter }}"></canvas>
-            <script>
-                var ctx = document.getElementById('graficoDispersion{{ forloop.counter }}').getContext('2d');
-                var dispersionData = {{ grafico.datos|safe }};
-                
-                var scatterChartData = {
-                    datasets: [{
-                        type: 'scatter',
-                        label: 'Observaciones',
-                        data: dispersionData.x.map(function(value, index) {
-                            return {x: value, y: dispersionData.y[index]};
-                        }),
-                        backgroundColor: 'rgb(0, 99, 132)'
-                    }, {
-                        type: 'line',
-                        label: 'Línea de Ajuste',
-                        data: dispersionData.x.map(function(value, index) {
-                            return {x: value, y: dispersionData.y_model[index]};
-                        }),
-                        borderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 2,
-                        fill: false
-                    }]
-                };
-    
-                var scatterChartOptions = {
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: 'Eje X'
+                <div class="container mt-5 mb-5">
+                    <h4>{{ grafico.titulo }}</h4>
+                    <canvas id="graficoDispersion{{ forloop.counter }}"></canvas>
+                    <script>
+                        var ctx = document.getElementById('graficoDispersion{{ forloop.counter }}').getContext('2d');
+                        var dispersionData = {{ grafico.datos|safe }};
+                        
+                        var scatterChartData = {
+                            datasets: [{
+                                type: 'scatter',
+                                label: 'Observaciones',
+                                data: dispersionData.x.map(function(value, index) {
+                                    return {x: value, y: dispersionData.y[index]};
+                                }),
+                                backgroundColor: 'rgb(0, 99, 132)'
+                            }, {
+                                type: 'line',
+                                label: 'Línea de Ajuste',
+                                data: dispersionData.x.map(function(value, index) {
+                                    return {x: value, y: dispersionData.y_model[index]};
+                                }),
+                                borderColor: 'rgb(255, 99, 132)',
+                                borderWidth: 2,
+                                fill: false
+                            }]
+                        };
+            
+                        var scatterChartOptions = {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    position: 'bottom',
+                                    title: {
+                                        display: true,
+                                        text: 'Eje X'
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    title: {
+                                        display: true,
+                                        text: 'Eje Y'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
                             }
-                        },
-                        y: {
-                            type: 'linear',
-                            title: {
-                                display: true,
-                                text: 'Eje Y'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
-                    }
-                };
-    
-                new Chart(ctx, {
-                    type: 'scatter',
-                    data: scatterChartData,
-                    options: scatterChartOptions
-                });
-            </script>
-        {% endif %}
+                        };
+            
+                        new Chart(ctx, {
+                            type: 'scatter',
+                            data: scatterChartData,
+                            options: scatterChartOptions
+                        });
+                    </script>            
+                </div>
+            {% endif %}
         {% endfor %}
     {% endif %}
 </div>
