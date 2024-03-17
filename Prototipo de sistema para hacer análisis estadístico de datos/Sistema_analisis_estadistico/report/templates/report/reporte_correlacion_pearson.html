@@ -1,0 +1,193 @@
+{% extends "report/plantilla_reporte.html" %}
+
+{% block reporte %}
+
+    <div class="mb-5">
+        <h3>{{ reporte_data.titulo }}</h3>
+        <p>{{ reporte_data.descripcion }}</p>
+    </div>
+
+    <!-- Primeras Filas Analizadas -->
+    <div class="container mt-5 mb-5">
+        <h4>Muestra de datos analizados</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        {% for columna in reporte_data.resultados.nombres_columnas %}
+                            <th>{{ columna }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead> 
+                <tbody>
+                    {% for fila in reporte_data.resultados.primeras_filas %}
+                        <tr>
+                            {% for valor in fila.values %}
+                                <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>                
+        </div>
+    </div>
+
+    <!-- Matriz de Correlación -->
+    <div class="container mt-5 mb-5">
+        <h4>Coeficientes de Pearson</h4>
+        <div class="table-responsive"> <!-- Envoltorio para hacer la tabla desplazable -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th> <!-- Celda vacía para alinear los encabezados de columna -->
+                        {% for variable in reporte_data.resultados.matriz_correlacion.keys %}
+                            <th>{{ variable }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead> 
+                <tbody>
+                    {% for variable, correlaciones in reporte_data.resultados.matriz_correlacion.items %}
+                        <tr>
+                            <th scope="row">{{ variable }}</th> <!-- Encabezado de fila en negritas -->
+                            {% for valor in correlaciones.values %}
+                                <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Gráfica de Burbuja para la Matriz de Correlación -->
+    {% if reporte_data.resultados.graficas %}
+        {% for grafica in reporte_data.resultados.graficas %}
+        <div class="container mt-5 mb-5">
+            <h4>{{ grafica.titulo }}</h4>
+            <canvas id="grafico{{ forloop.counter }}"></canvas>
+            <script>
+                var ctx = document.getElementById('grafico{{ forloop.counter }}').getContext('2d');
+                
+                {% if grafica.tipo_grafico == "diagrama_dispersion" %}
+                    // Gráfico de dispersión
+                    var scatterData = {
+                        datasets: [{
+                            label: 'Dispersión',
+                            data: {{ grafica.datos|safe }},
+                            backgroundColor: 'rgba(49, 128, 254, 0.8)'
+                        }]
+                    };
+
+                    var scatterChart = new Chart(ctx, {
+                        type: 'scatter',
+                        data: scatterData,
+                        options: {
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: '{{ grafica.etiquetas_x }}'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: '{{ grafica.etiquetas_y }}'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                {% else %}
+                    // Gráfico de burbujas
+                    var etiquetasX = {{ grafica.etiquetas_x|safe }};
+                    var etiquetasY = {{ grafica.etiquetas_y|safe }};
+                    var datosPositivos = {{ grafica.datos_positivos|safe }};
+                    var datosNegativos = {{ grafica.datos_negativos|safe }};
+
+                    var bubbleData = {
+                        labels: etiquetasX,
+                        datasets: [
+                            {
+                                label: 'Correlación Positiva',
+                                data: datosPositivos.map(function(point) {
+                                    return {
+                                        x: point.x,
+                                        y: point.y,
+                                        r: point.r,
+                                        backgroundColor: point.backgroundColor
+                                    };
+                                }),
+                                backgroundColor: datosPositivos.map(function(point) {
+                                    return point.backgroundColor;
+                                })
+                            },
+                            {
+                                label: 'Correlación Negativa',
+                                data: datosNegativos.map(function(point) {
+                                    return {
+                                        x: point.x,
+                                        y: point.y,
+                                        r: point.r,
+                                        backgroundColor: point.backgroundColor
+                                    };
+                                }),
+                                backgroundColor: datosNegativos.map(function(point) {
+                                    return point.backgroundColor;
+                                })
+                            }
+                        ]
+                    };
+
+                    var bubbleChart = new Chart(ctx, {
+                        type: 'bubble',
+                        data: bubbleData,
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    position: 'bottom',
+                                    ticks: {
+                                        min: 0,
+                                        max: etiquetasX.length - 1,
+                                        stepSize: 1,
+                                        callback: function(value, index, values) {
+                                            return etiquetasX[value];
+                                        }
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    ticks: {
+                                        reverse: true,
+                                        min: 0,
+                                        max: etiquetasY.length - 1,
+                                        stepSize: 1,
+                                        callback: function(value, index, values) {
+                                            return etiquetasY[value];
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            var labelX = etiquetasX[context.raw.x];
+                                            var labelY = etiquetasY[context.raw.y];
+                                            var correlationValue = context.raw.r / 100; // Ajuste basado en la normalización original
+                                            var correlation = Math.round(correlationValue * 100) / 100; // Redondeo a dos decimales
+                                            return labelX + '-' + labelY + ': ' + correlation;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                {% endif %}
+            </script>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

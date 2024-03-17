@@ -1,9 +1,7 @@
-{% extends "layouts/base.html" %}
+{% extends "report/plantilla_reporte.html" %}
 
-{% block title %}Reporte de Análisis{% endblock %}
+{% block reporte %}
 
-{% block content %}
-<div class="bg-white rounded shadow p-4 mt-4 flex-shrink-1">
     <div class="mb-5">
         <h3>{{ reporte.titulo }}</h3>
         <p>{{ reporte.descripcion }}</p>    
@@ -12,109 +10,117 @@
     <!-- Primeras Filas Analizadas -->
     <div class="container mt-5 mb-5">
         <h4>Muestra de datos analizados</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    {% for columna in reporte.resultados.nombres_columnas %}
-                        <th>{{ columna }}</th>
-                    {% endfor %}
-                </tr>
-            </thead> 
-            <tbody>
-                {% for fila in reporte.resultados.primeras_filas %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                     <tr>
-                        {% for valor in fila.values %}
-                            <td>{{ valor }}</td>
+                        {% for columna in reporte.resultados.nombres_columnas %}
+                            <th>{{ columna }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>    
+                </thead> 
+                <tbody>
+                    {% for fila in reporte.resultados.primeras_filas %}
+                        <tr>
+                            {% for valor in fila.values %}
+                                <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>    
     </div>
 
 
     <!-- Matriz de Confusión -->
     <div class="container mt-5 mb-5">
         <h4>Matriz de Confusión</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Predicho: No</th>
-                    <th>Predicho: Sí</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>Real: No</th>
-                    <!-- Acceso directo a los elementos de la matriz sin usar índices -->
-                    <td>{{ reporte.resultados.matriz_confusion.0.0 }}</td>
-                    <td>{{ reporte.resultados.matriz_confusion.0.1 }}</td>
-                </tr>
-                <tr>
-                    <th>Real: Sí</th>
-                    <td>{{ reporte.resultados.matriz_confusion.1.0 }}</td>
-                    <td>{{ reporte.resultados.matriz_confusion.1.1 }}</td>
-                </tr>
-            </tbody>        
-        </table>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Predicho: No</th>
+                        <th>Predicho: Sí</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Real: No</th>
+                        <!-- Acceso directo a los elementos de la matriz sin usar índices -->
+                        <td>{{ reporte.resultados.matriz_confusion.0.0 }}</td>
+                        <td>{{ reporte.resultados.matriz_confusion.0.1 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Real: Sí</th>
+                        <td>{{ reporte.resultados.matriz_confusion.1.0 }}</td>
+                        <td>{{ reporte.resultados.matriz_confusion.1.1 }}</td>
+                    </tr>
+                </tbody>        
+            </table>
+        </div>
     </div>
 
     <!-- Métricas de Rendimiento -->
     <div class="container mt-5 mb-5">
         <h4>Métricas de Rendimiento</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Métrica</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Precisión</td>
-                    <td>{{ reporte.resultados.precision }}</td>
-                </tr>
-                <tr>
-                    <td>Recall</td>
-                    <td>{{ reporte.resultados.recall }}</td>
-                </tr>
-                <tr>
-                    <td>F1-Score</td>
-                    <td>{{ reporte.resultados.f1_score }}</td>
-                </tr>
-                <tr>
-                    <td>AUC</td>
-                    <td>{{ reporte.resultados.auc }}</td>
-                </tr>
-            </tbody>
-        </table>        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Precisión</td>
+                        <td>{{ reporte.resultados.precision }}</td>
+                    </tr>
+                    <tr>
+                        <td>Recall</td>
+                        <td>{{ reporte.resultados.recall }}</td>
+                    </tr>
+                    <tr>
+                        <td>F1-Score</td>
+                        <td>{{ reporte.resultados.f1_score }}</td>
+                    </tr>
+                    <tr>
+                        <td>AUC</td>
+                        <td>{{ reporte.resultados.auc }}</td>
+                    </tr>
+                </tbody>
+            </table>       
+        </div>
     </div>
 
 
     <!-- Coeficientes del Modelo -->
     <div class="container mt-5 mb-5">
         <h4>Coeficientes del Modelo</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Variable</th>
-                    <th>Coeficiente</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for variable, coef in reporte.resultados.coeficientes.items %}
-                <tr>
-                    <td>{{ variable }}</td>
-                    <td>{{ coef }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td>Intercepto</td>
-                    <td>{{ reporte.resultados.intercepto }}</td>
-                </tr>
-            </tbody>
-        </table>        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Coeficiente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for variable, coef in reporte.resultados.coeficientes.items %}
+                    <tr>
+                        <td>{{ variable }}</td>
+                        <td>{{ coef }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>Intercepto</td>
+                        <td>{{ reporte.resultados.intercepto }}</td>
+                    </tr>
+                </tbody>
+            </table>                 
+        </div>
     </div>
 
 
@@ -254,5 +260,5 @@
             {% endif %}
         {% endfor %}
     {% endif %}
-</div>
+
 {% endblock %}

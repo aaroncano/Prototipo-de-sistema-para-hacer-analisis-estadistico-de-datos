@@ -8,16 +8,13 @@ from utils.csv_utils import gestionar_version_archivo, leer_csv_o_error, guardar
 from utils.tablas_utils import crear_inicio_tabla
 import numpy as np
 from .utils import inferencial_utils
+from .utils import correlacion_utils
 
 
 
 from django.shortcuts import redirect
 
 def estadistica_descriptiva(request, file_name):
-    resultado = {
-        'Errores': []
-    }
-
     # Manejo de error y carga de DataFrame
     df, error_response, file_path = leer_csv_o_error(request, file_name)
     if error_response:
@@ -171,4 +168,68 @@ def regresion_logistica(request, file_name):
         'columnas_numericas': columnas_numericas,
         'columnas_binarias': columnas_binarias,
         'dataframe': df.head(20).to_html(classes='table table-striped', index=True)
+    })
+
+def correlacion_pearson(request, file_name):
+    # Manejo de error y carga de DataFrame
+    df, error_response, file_path = leer_csv_o_error(request, file_name)
+    if error_response:
+        return redirect('file_handler:cargar_archivo')
+    
+    # Manejo de POST
+    if request.method == 'POST':
+        variables = request.POST.getlist('variables')  # Obtenemos las variables seleccionadas por el usuario
+        
+        new_file_name, new_file_path = gestionar_version_archivo(request, file_name)
+        df_procesado, reporte_data, resultado = correlacion_utils.correlacion_pearson(df, variables)
+        
+        if resultado['Errores']:
+            guardar_resultado_en_sesion(request, resultado)
+            return redirect('file_handler:revisar_csv', file_name=new_file_name)
+        
+        request.session['reporte_data'] = json.dumps(reporte_data)  # Guardamos los datos del reporte en la sesión
+        
+        guardar_csv(df_procesado, new_file_path)  # Guardamos el DataFrame procesado
+        return redirect('report:reporte_correlacion_pearson', file_name=new_file_name)  # Redirigimos al reporte de correlación de Pearson
+    
+    # Preparación para el método GET
+    df_html, columnas = preparar_datos_para_get(df, include_dtypes=['number'])  # Nos aseguramos de incluir solo columnas numéricas
+    
+    return render(request, 'data_analysis/correlacion_pearson.html', {
+        'file_name': file_name,
+        'columnas': columnas,
+        'dataframe': df_html
+    })
+
+def correlacion_spearman(request, file_name):
+    # Manejo de error y carga de DataFrame
+    df, error_response, file_path = leer_csv_o_error(request, file_name)
+    if error_response:
+        return redirect('file_handler:cargar_archivo')
+    
+    # Manejo de POST
+    if request.method == 'POST':
+        variables = request.POST.getlist('variables')  # Obtenemos las variables seleccionadas por el usuario
+        
+        new_file_name, new_file_path = gestionar_version_archivo(request, file_name)
+        df_procesado, reporte_data, resultado = correlacion_utils.correlacion_spearman(df, variables)
+        
+        if resultado['Errores']:
+            guardar_resultado_en_sesion(request, resultado)
+            return redirect('file_handler:revisar_csv', file_name=new_file_name)
+        
+        request.session['reporte_data'] = json.dumps(reporte_data)  # Guardamos los datos del reporte en la sesión
+        
+        guardar_csv(df_procesado, new_file_path)  # Guardamos el DataFrame procesado
+        return redirect('report:reporte_correlacion_spearman', file_name=new_file_name)  # Redirigimos al reporte de correlación de Spearman
+    
+    # Preparación para el método GET
+    df_html, columnas = preparar_datos_para_get(df, include_dtypes=['number'])
+    # Nota: Aquí se podría ajustar el método `preparar_datos_para_get` para incluir un argumento opcional que permita
+    # filtrar las columnas basadas en si son adecuadas para una correlación de Spearman, incluyendo numéricas y ordinales.
+
+    return render(request, 'data_analysis/correlacion_spearman.html', {
+        'file_name': file_name,
+        'columnas': columnas,
+        'dataframe': df_html
     })

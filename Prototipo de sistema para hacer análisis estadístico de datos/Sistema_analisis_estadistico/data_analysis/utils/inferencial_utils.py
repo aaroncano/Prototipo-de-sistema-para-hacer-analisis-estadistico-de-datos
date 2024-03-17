@@ -18,7 +18,8 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
         y = df[variable_dependiente]
 
         # Obtener las primeras 10 filas para las columnas especificadas
-        primeras_filas = df[variables_independientes + [variable_dependiente]].head(10)
+        columnas_unicas = list(set(variables_independientes + [variable_dependiente]))
+        primeras_filas = df[columnas_unicas].head(10)
 
         # Dividir los datos en conjunto de entrenamiento y prueba
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -80,7 +81,7 @@ def regresion_linear(df, variable_dependiente, variables_independientes):
                 },
                 "coeficientes": dict(zip(variables_independientes, modelo.coef_)),
                 "intercepto": modelo.intercept_,
-                "nombres_columnas": variables_independientes + [variable_dependiente], 
+                "nombres_columnas": columnas_unicas,
                 "primeras_filas": primeras_filas.to_dict('records'), 
                 "graficos": graficos
             }
@@ -102,7 +103,8 @@ def regresion_logistica(df, variable_dependiente, variables_independientes, umbr
         y = label_binarize(df[variable_dependiente].values, classes=[0, 1])[:, 0]
 
         # Obtener las primeras 10 filas para las columnas especificadas
-        primeras_filas = df[variables_independientes + [variable_dependiente]].head(10)
+        columnas_unicas = list(set(variables_independientes + [variable_dependiente]))
+        primeras_filas = df[columnas_unicas].head(10)
        
         # Dividir los datos en conjunto de entrenamiento y prueba
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -155,7 +157,7 @@ def regresion_logistica(df, variable_dependiente, variables_independientes, umbr
                 "auc": roc_auc,
                 "coeficientes": dict(zip(variables_independientes, modelo.coef_.flatten())),
                 "intercepto": modelo.intercept_[0],
-                "nombres_columnas": variables_independientes + [variable_dependiente], 
+                "nombres_columnas": columnas_unicas, 
                 "primeras_filas": primeras_filas.to_dict('records'), 
                 "graficos": [
                     {

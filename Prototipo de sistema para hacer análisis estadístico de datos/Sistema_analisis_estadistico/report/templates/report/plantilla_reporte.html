@@ -1,0 +1,27 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %} Reporte de Análisis {% endblock %}
+
+{% block content %}
+
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<div class="bg-white rounded shadow p-4 mt-4 flex-shrink-1">
+
+    {% block reporte %}
+
+    {% endblock %}
+
+    <div class="container mt-5 mb-5">
+        <button class="btn btn-primary" onclick="exportarReporte()">Exportar Reporte</button>  
+    </div>
+
+</div>
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/exportar_reporte.js' %}"></script>
+{% endblock %}
+
+{% endblock %}
